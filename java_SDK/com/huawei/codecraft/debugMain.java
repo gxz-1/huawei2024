@@ -19,9 +19,6 @@ import java.util.Scanner;
  */
 public class debugMain {
 
-    String mapFile="maps/map2.txt";
-
-    String inputFile="";
     private static final int n = 200;
     private static final int robot_num = 10;
     private static final int berth_num = 10;
@@ -35,39 +32,26 @@ public class debugMain {
     private Berth[] berth = new Berth[berth_num + 10];
     private Boat[] boat = new Boat[10];
 
-    private void init() {
-        Scanner scanf = null;
-        try {
-            File file = new File(mapFile);
-            scanf = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    private void init(Scanner scanf) {
         for(int i = 1; i <= n; i++) {
             ch[i] = scanf.nextLine();
         }
-//        for (int i = 0; i < berth_num; i++) {
-//            int id = scanf.nextInt();
-//            berth[id] = new Berth();
-//            berth[id].x = scanf.nextInt();
-//            berth[id].y = scanf.nextInt();
-//            berth[id].transport_time = scanf.nextInt();
-//            berth[id].loading_speed = scanf.nextInt();
-//        }
-//        this.boat_capacity = scanf.nextInt();
-//        String okk = scanf.nextLine();
+        for (int i = 0; i < berth_num; i++) {
+            int id = scanf.nextInt();
+            berth[id] = new Berth();
+            berth[id].x = scanf.nextInt();
+            berth[id].y = scanf.nextInt();
+            berth[id].transport_time = scanf.nextInt();
+            berth[id].loading_speed = scanf.nextInt();
+        }
+        this.boat_capacity = scanf.nextInt();
+        String okk = scanf.nextLine();
+        scanf.nextLine();
         System.out.println("OK");
         System.out.flush();
     }
 
-    private int input()  {
-        Scanner scanf = null;
-        try {
-            File file = new File(inputFile);
-            scanf = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    private int input(Scanner scanf)  {
         this.id = scanf.nextInt();
         this.money = scanf.nextInt();
         int num = scanf.nextInt();
@@ -93,12 +77,21 @@ public class debugMain {
     }
 
     public static void main(String[] args) {
+
+        Scanner scanf = null;
+        try {
+            File file = new File("maps/debuginput1.txt");
+            scanf = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         debugMain mainInstance = new debugMain();
-        mainInstance.init();//load map data
+        mainInstance.init(scanf);//load map data
         //TODO 初始化寻路算法
         AStarPathSearch ps = new AStarPathSearch(mainInstance.ch);
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
-            int id = mainInstance.input();
+            int id = mainInstance.input(scanf);
             //TODO 编写移动逻辑
             //移动机器人
             for(int i = 0; i < robot_num; i ++){

@@ -4,7 +4,7 @@
 
 //-----------------------------java版 
 //先编译打包
-javac -d bin java_SDK/com/huawei/codecraft/*.java (源代码编译为字节码，才能打包为jar包。-d xx 表示编译后文件存放在哪里)
+javac -encoding UTF-8 -d bin java_SDK/com/huawei/codecraft/*.java (源代码编译为字节码，才能打包为jar包。-d xx 表示编译后文件存放在哪里)
 jar cvfm MyApp.jar META-INF/MANIFEST.MF -C bin . （把字节码根据清单文件打包为可运行的jar包）
 
 //运行
