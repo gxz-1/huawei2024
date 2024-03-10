@@ -1,0 +1,56 @@
+package com.huawei.codecraft.pathsearch;
+
+import java.util.List;
+
+import java.util.ArrayList;
+import java.util.Stack;
+
+
+public class dfsPathSearch {
+    private String[] grid;
+    private boolean[][] visited;
+    private int endX, endY;
+
+    public dfsPathSearch(String[] grid) {
+        this.grid = grid;
+        this.visited = new boolean[grid.length][grid[0].length()];
+    }
+
+    private boolean isValid(int x, int y) {
+        return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length() && grid[x].charAt(y) == '.' && !visited[x][y];
+    }
+
+    public List<Node> findPath(int startX, int startY, int endX, int endY) {
+        this.endX = endX;
+        this.endY = endY;
+        Stack<Node> stack = new Stack<>();
+        List<Node> path = new ArrayList<>();
+
+        stack.push(new Node(startX, startY, null));
+        while (!stack.isEmpty()) {
+            Node current = stack.pop();
+            if (visited[current.x][current.y]) continue;
+            visited[current.x][current.y] = true;
+
+            if (current.x == endX && current.y == endY) {
+                while (current != null) {
+                    path.add(0, current); // 逆序构建路径
+                    current = current.parent;
+                }
+                return path;
+            }
+
+            // 探索四个方向
+            int[] dx = {0, 1, 0, -1};
+            int[] dy = {1, 0, -1, 0};
+            for (int i = 0; i < 4; i++) {
+                int nx = current.x + dx[i], ny = current.y + dy[i];
+                if (isValid(nx, ny)) {
+                    stack.push(new Node(nx, ny, current));
+                }
+            }
+        }
+
+        return path; // 如果没有找到路径，则返回空列表
+    }
+}
