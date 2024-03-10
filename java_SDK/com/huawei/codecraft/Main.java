@@ -64,7 +64,8 @@ public class Main {
         for (int i = 1; i <= num; i++) {
             int x = scanf.nextInt();//info of new goods
             int y = scanf.nextInt();
-            int val = scanf.nextInt();//but these data was wasted here, we should use gds to save these data
+            int val = scanf.nextInt();//but these data was wasted here, we should use gds to save these data in nextline
+            gds[x][y] = val;
 
         }
         for(int i = 0; i < robot_num; i++) {
