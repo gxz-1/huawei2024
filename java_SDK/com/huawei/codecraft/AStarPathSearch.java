@@ -1,4 +1,4 @@
-package com.huawei.codecraft.pathsearch;
+package com.huawei.codecraft;
 
 import java.util.*;
 
@@ -12,7 +12,7 @@ public class AStarPathSearch {
     public AStarPathSearch(String[] grid) {
         this.grid = grid;
         this.openList = new PriorityQueue<>();
-        this.closedList = new boolean[grid.length][grid[0].length()];
+        this.closedList = new boolean[grid.length][grid[1].length()];
     }
 
     private int heuristic(int x, int y) {
@@ -20,7 +20,7 @@ public class AStarPathSearch {
     }
 
     private boolean isValid(int x, int y) {
-        return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length() && grid[x].charAt(y) == '.';
+        return x >= 0 && x < grid.length && y >= 0 && y < grid[1].length() && grid[x].charAt(y) == '.';
     }
 
     private List<Node> findNeighbors(Node current) {

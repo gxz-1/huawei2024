@@ -4,8 +4,11 @@
 
 package com.huawei.codecraft;
 
+import com.huawei.codecraft.AStarPathSearch;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -43,16 +46,16 @@ public class debugMain {
         for(int i = 1; i <= n; i++) {
             ch[i] = scanf.nextLine();
         }
-        for (int i = 0; i < berth_num; i++) {
-            int id = scanf.nextInt();
-            berth[id] = new Berth();
-            berth[id].x = scanf.nextInt();
-            berth[id].y = scanf.nextInt();
-            berth[id].transport_time = scanf.nextInt();
-            berth[id].loading_speed = scanf.nextInt();
-        }
-        this.boat_capacity = scanf.nextInt();
-        String okk = scanf.nextLine();
+//        for (int i = 0; i < berth_num; i++) {
+//            int id = scanf.nextInt();
+//            berth[id] = new Berth();
+//            berth[id].x = scanf.nextInt();
+//            berth[id].y = scanf.nextInt();
+//            berth[id].transport_time = scanf.nextInt();
+//            berth[id].loading_speed = scanf.nextInt();
+//        }
+//        this.boat_capacity = scanf.nextInt();
+//        String okk = scanf.nextLine();
         System.out.println("OK");
         System.out.flush();
     }
@@ -91,20 +94,85 @@ public class debugMain {
 
     public static void main(String[] args) {
         debugMain mainInstance = new debugMain();
-        mainInstance.init();
-        for(int zhen = 1; zhen <= 15000; zhen ++) {
+        mainInstance.init();//load map data
+        //TODO 初始化寻路算法
+        AStarPathSearch ps = new AStarPathSearch(mainInstance.ch);
+        for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
             int id = mainInstance.input();
-            Random rand = new Random();
-            for(int i = 0; i < robot_num; i ++)
-                System.out.printf("move %d %d" + System.lineSeparator(), i, rand.nextInt(4) % 4);
+            //TODO 编写移动逻辑
+            //移动机器人
+            for(int i = 0; i < robot_num; i ++){
+                Robot r=mainInstance.robot[i];
+                if(r.status==-1){//异常状态:返回泊位点右下角位置
+                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 2, mainInstance.berth[i * 2].y + 2);
+                    System.out.printf("move %d %d" + System.lineSeparator(), i, mvPath.poll());
+                    r.mvPath=mvPath;
+                    r.status=2;
+                }else if(r.status==0){
+                    //拿到range*2范围内的所有货物gds
+                    int[][] goodsMap=mainInstance.gds;
+                    int range=10;
+                    long MaxWeight=-1;//权重定义为货物价值/距离机器人的距离
+                    LinkedList<Integer> BestPath=null;
+                    for(int j=r.x-10;j<r.x+10;++j){
+                        for(int k=r.y-10;k<r.y+10;++k){
+                            if(goodsMap[j][k]!=0){//是货物
+                                LinkedList<Integer> path = ps.findPath(r.x, r.y, j, k);
+                                if(path.size()!=0 &&  (goodsMap[j][k]/path.size())>MaxWeight){//更新权重最大的物品
+                                    MaxWeight=goodsMap[j][k]/path.size();
+                                    BestPath=path;
+                                }
+                            }
+                        }
+                    }
+                    System.out.printf("move %d %d" + System.lineSeparator(), i, BestPath.poll());
+                    r.mvPath=BestPath;
+                    r.status=1;
+                }else if (r.status==1) {//robot is moving to target good and will get it
+                    if(r.mvPath.size()>0){// still on the way
+                        System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+                    }else{// already arrived at good position
+                        //if good still exists
+
+                        if (mainInstance.gds[r.x][r.y] > 0) {
+                            System.out.printf("get %d" + System.lineSeparator(), i);
+                            r.status=2;
+                            r.mvPath=ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 2, mainInstance.berth[i * 2].y + 2);
+                        } else {
+                            //if good has been taken by other robot
+                            r.status=0;
+                        }
+                    }
+
+                } else if (r.status==2) {//robot is moving to berth
+
+                    if(r.mvPath.size()>0){// still on the way
+                        System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+                    }else{// already arrived at berth
+                        System.out.printf("pull %d" + System.lineSeparator(), i);
+                        r.status=0;
+                    }
+
+                }
+            }
+            //移动船
+            if(zhen==1){
+                for (int i=0;i<5;++i){
+                    System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
+                }
+            }
             System.out.println("OK");
             System.out.flush();
         }
     }
 
+
+    /**
+     * Entity: Robot
+     */
     class Robot {
         int x, y, goods;
-        int status;
+        int status; //-1异常状态 0 空闲 1前往物品中 2拿到物品前往泊位中
         int mbx, mby;
 
         public Robot() {}
@@ -113,8 +181,13 @@ public class debugMain {
             this.x = startX;
             this.y = startY;
         }
+
+        LinkedList<Integer> mvPath;
     }
 
+    /**
+     * Entity: Berth
+     */
     class Berth {
         int x;
         int y;
@@ -129,6 +202,9 @@ public class debugMain {
         }
     }
 
+    /**
+     * Entity: Boat
+     */
     class Boat {
         int num;
         int pos;

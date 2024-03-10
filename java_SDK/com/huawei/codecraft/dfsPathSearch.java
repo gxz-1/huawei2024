@@ -1,4 +1,4 @@
-package com.huawei.codecraft.pathsearch;
+package com.huawei.codecraft;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.huawei.codecraft.pathsearch;
+package com.huawei.codecraft;
 
 public class Node implements Comparable<Node>{
     int x, y;
