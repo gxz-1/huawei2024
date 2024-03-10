@@ -1,4 +1,4 @@
-javac -d bin java_SDK/com/huawei/codecraft/*.java 
+javac -encoding UTF-8 -d bin java_SDK/com/huawei/codecraft/*.java 
 
 jar cvfm OurDemo.jar META-INF/MANIFEST.MF -C bin . 
 

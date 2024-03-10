@@ -123,7 +123,7 @@ public class Main {
                     LinkedList<Integer> BestPath=null;
                     for(int j=r.x-range;j<r.x+range;++j){
                         for(int k=r.y-range;k<r.y+range;++k){
-                            if(goodsMap[j][k]!=0){//是货物
+                            if(j>=0 && j<goodsMap.length && k>=0 && k<goodsMap[0].length && goodsMap[j][k]!=0){//是货物
                                 LinkedList<Integer> path = ps.findPath(r.x, r.y, j, k);
                                 if(path.size()!=0 &&  (goodsMap[j][k]/path.size())>MaxWeight){//更新权重最大的物品
                                     MaxWeight=goodsMap[j][k]/path.size();
@@ -157,15 +157,13 @@ public class Main {
                         }
                     }
                     
-                } else if (r.status==2) {//robot is moving to berth
-
+                }else if (r.status==2) {//robot is moving to berth
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
                     }else{// already arrived at berth
                         System.out.printf("pull %d" + System.lineSeparator(), i);
                         r.status=0;
                     }
-
                 }
             }
             //移动船
@@ -188,11 +186,14 @@ public class Main {
         int status; //-1异常状态 0 空闲 1前往物品中 2拿到物品前往泊位中
         int mbx, mby;
 
-        public Robot() {}
+        public Robot() {
+            status=-1;
+        }
 
         public Robot(int startX, int startY) {
             this.x = startX;
             this.y = startY;
+            status=-1;
         }
 
         LinkedList<Integer> mvPath;
