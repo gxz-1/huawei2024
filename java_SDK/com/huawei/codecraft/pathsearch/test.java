@@ -68,9 +68,9 @@ public class test {
 
         long startTime = System.currentTimeMillis();
         //TODO 创建JPS实例并寻找路径
-//        JpsPathSearch ps = new JpsPathSearch(grid);
+        JpsPathSearch ps = new JpsPathSearch(grid);
         //使用A*
-        AStarPathSearch ps = new AStarPathSearch(grid);
+//        AStarPathSearch ps = new AStarPathSearch(grid);
         //使用dfs
 //        dfsPathSearch ps = new dfsPathSearch(grid);
 

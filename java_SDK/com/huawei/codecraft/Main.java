@@ -4,6 +4,12 @@
 
 package com.huawei.codecraft;
 
+import com.huawei.codecraft.pathsearch.AStarPathSearch;
+import com.huawei.codecraft.pathsearch.JpsPathSearch;
+import com.huawei.codecraft.pathsearch.Node;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -35,18 +41,20 @@ public class Main {
      */
     private void init() {
         Scanner scanf = new Scanner(System.in);
+        //输入地图
         for(int i = 1; i <= n; i++) {
             ch[i] = scanf.nextLine();
-        }//now we have the map data in ch
+        }
+        //10行泊位数据
         for (int i = 0; i < berth_num; i++) {
             int id = scanf.nextInt();
             berth[id] = new Berth();
             berth[id].x = scanf.nextInt();
-            berth[id].y = scanf.nextInt();
-            berth[id].transport_time = scanf.nextInt();
-            berth[id].loading_speed = scanf.nextInt();
+            berth[id].y = scanf.nextInt();//泊位左上坐标，4*4大小
+            berth[id].transport_time = scanf.nextInt();//运输到虚拟点所需时间
+            berth[id].loading_speed = scanf.nextInt();//每帧可以装载的物品数量
         }//now we have the Berth objects in berth array
-        this.boat_capacity = scanf.nextInt();//boat_capacity is a constant integer
+        this.boat_capacity = scanf.nextInt();//船的容积
         String okk = scanf.nextLine();//priliminaryJudge.exe input "OK" means input finished.
         System.out.println("OK");
         System.out.flush();
@@ -66,7 +74,6 @@ public class Main {
             int y = scanf.nextInt();
             int val = scanf.nextInt();//but these data was wasted here, we should use gds to save these data in nextline
             gds[x][y] = val;
-
         }
         for(int i = 0; i < robot_num; i++) {
             robot[i] = new Robot();
@@ -74,6 +81,9 @@ public class Main {
             robot[i].x = scanf.nextInt();//robot i's position
             robot[i].y = scanf.nextInt();
             int sts = scanf.nextInt();//Is robot i workable?
+            if(sts==0){
+                robot[i].status=-1;//异常
+            }
         }
         for(int i = 0; i < 5; i ++) {
             boat[i] = new Boat();
@@ -91,14 +101,29 @@ public class Main {
     public static void main(String[] args) {
         Main mainInstance = new Main();//create a agents(Main)
         mainInstance.init();//load map data
+        //TODO 初始化寻路算法
+        AStarPathSearch ps = new AStarPathSearch(mainInstance.ch);
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
             int id = mainInstance.input();
-
-            //output commands to judge.exe
-            //  agents' action
-            Random rand = new Random();
-            for(int i = 0; i < robot_num; i ++)
-                System.out.printf("move %d %d" + System.lineSeparator(), i, rand.nextInt(4) % 4);
+            //TODO 编写移动逻辑
+            //移动机器人
+            for(int i = 0; i < robot_num; i ++){
+                Robot r=mainInstance.robot[i];
+                if(r.status==-1){//异常状态:返回泊位点右下角位置
+                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 2, mainInstance.berth[i * 2].y + 2);
+                    r.mvPath=mvPath;
+                    System.out.printf("move %d %d" + System.lineSeparator(), i, mvPath.poll());
+                    r.status=2;
+                }else if(r.status==0){
+                    //拿到所有货物gds
+                }
+            }
+            //移动船
+            if(zhen==1){
+                for (int i=0;i<5;++i){
+                    System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
+                }
+            }
             System.out.println("OK");
             System.out.flush();
         }
@@ -110,7 +135,7 @@ public class Main {
      */
     class Robot {
         int x, y, goods;
-        int status;
+        int status; //-1异常状态 0 空闲 1前往物品中 2拿到物品前往泊位中
         int mbx, mby;
 
         public Robot() {}
@@ -119,6 +144,8 @@ public class Main {
             this.x = startX;
             this.y = startY;
         }
+
+        LinkedList<Integer> mvPath;
     }
 
     /**

@@ -1,9 +1,6 @@
 package com.huawei.codecraft.pathsearch;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 
 public class AStarPathSearch {
@@ -41,7 +38,7 @@ public class AStarPathSearch {
         return neighbors;
     }
 
-    public List<Node> findPath(int startX, int startY, int endX, int endY) {
+    public LinkedList<Integer> findPath(int startX, int startY, int endX, int endY) {
         this.endX = endX;
         this.endY = endY;
         Node startNode = new Node(startX, startY, null, 0, heuristic(startX, startY));
@@ -67,16 +64,37 @@ public class AStarPathSearch {
             }
         }
 
-        return new ArrayList<>(); // 未找到路径
+        return new LinkedList<>(); // 未找到路径
     }
 
-    private List<Node> reconstructPath(Node node) {
-        List<Node> path = new ArrayList<>();
+//    private List<Node> reconstructPath(Node node) {
+//        List<Node> path = new ArrayList<>();
+//        while (node != null) {
+//            path.add(node);
+//            node = node.parent;
+//        }
+//        Collections.reverse(path);
+//        return path;
+//    }
+
+    private LinkedList<Integer> reconstructPath(Node node) {
+        LinkedList<Integer> path = new LinkedList<>();
         while (node != null) {
-            path.add(node);
+            if(node.x==node.parent.x){
+                if((node.parent.y-node.y)==1){
+                    path.push(0);//右移
+                }else if((node.parent.y-node.y)==-1){
+                    path.push(1);//左移
+                }
+            }else if(node.y==node.parent.y){
+                if((node.parent.x-node.x)==1){
+                    path.push(2);//上移
+                }else if((node.parent.x-node.x)==-1){
+                    path.push(3);//下移
+                }
+            }
             node = node.parent;
         }
-        Collections.reverse(path);
         return path;
     }
 }
