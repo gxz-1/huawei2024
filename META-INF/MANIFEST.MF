@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: com.huawei.codecraft.debugMain
+Main-Class: com.huawei.codecraft.Main
