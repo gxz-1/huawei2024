@@ -66,14 +66,10 @@ public class AStarPathSearch {
 //        System.out.println("开始寻路：从 (" + startX + ", " + startY + ") 到 (" + endX + ", " + endY + ")");
 
         while (!openList.isEmpty()) {
-
-            //TODO 超过迭代次数限制
-            if (iterations++ > maxIterations) {
-//                System.out.println("超过最大迭代次数，终止搜索。");
-                return new LinkedList<>(); // 未找到路径
-            }
-
-
+//            if (iterations++ > maxIterations) {
+////                System.out.println("超过最大迭代次数，终止搜索。");
+//                return new LinkedList<>(); // 未找到路径
+//            }
             Node current = openList.poll();
 //            System.out.println("当前节点: (" + current.x + ", " + current.y + "), f=" + (current.g + current.h));
             if (current.x == endX && current.y == endY) {

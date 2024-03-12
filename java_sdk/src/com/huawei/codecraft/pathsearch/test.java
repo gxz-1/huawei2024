@@ -36,9 +36,9 @@ public class test {
         //使用dfs
 //        dfsPathSearch ps = new dfsPathSearch(grid);
 
-//        LinkedList<Integer> path = ps.findPath(163, 62, 39, 43);//TODO 这个数据就是死循环
+        LinkedList<Integer> path = ps.findPath(163, 62, 39, 43);//TODO 这个数据就是死循环
 //        LinkedList<Integer> path = ps.findPath(108, 127, 30, 74);
-        LinkedList<Integer> path = ps.findPath(36, 173, 4, 114);
+//        LinkedList<Integer> path = ps.findPath(36, 173, 4, 114);
         System.out.println("迭代次数："+ps.iterations);
         long endTime = System.currentTimeMillis();
         // 打印路径
