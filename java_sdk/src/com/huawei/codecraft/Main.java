@@ -183,9 +183,7 @@ public class Main {
                     System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
                 }
             }
-            Scanner scanf = new Scanner(System.in);
-            String OK = scanf.nextLine();
-//            System.out.println("OK");
+            System.out.println("OK");
             System.out.flush();
         }
     }
