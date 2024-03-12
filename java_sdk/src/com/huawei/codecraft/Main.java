@@ -4,12 +4,7 @@
 
 package com.huawei.codecraft;
 
-import com.huawei.codecraft.AStarPathSearch;
-import com.huawei.codecraft.JpsPathSearch;
-import com.huawei.codecraft.Node;
-
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 

@@ -4,8 +4,6 @@
 
 package com.huawei.codecraft;
 
-import com.huawei.codecraft.AStarPathSearch;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;

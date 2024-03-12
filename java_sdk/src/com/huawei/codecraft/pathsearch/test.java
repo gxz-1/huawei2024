@@ -2,13 +2,11 @@ package com.huawei.codecraft.pathsearch;
 
 
 import com.huawei.codecraft.AStarPathSearch;
-import com.huawei.codecraft.debugMain;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
 
 public class test {
@@ -39,6 +37,7 @@ public class test {
 //        dfsPathSearch ps = new dfsPathSearch(grid);
 
         LinkedList<Integer> path = ps.findPath(startX, startY, endX, endY);
+        path = ps.findPath(startX, startY, endX, endY);
         long endTime = System.currentTimeMillis();
         // 打印路径
         System.out.println("执行时间："+(endTime-startTime)+"ms");
