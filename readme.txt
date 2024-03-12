@@ -8,7 +8,7 @@ javac -encoding UTF-8 -d bin java_SDK/com/huawei/codecraft/*.java (源代码编�
 jar cvfm MyApp.jar META-INF/MANIFEST.MF -C bin . （把字节码根据清单文件打包为可运行的jar包）
 
 //运行
-.\PreliminaryJudge.exe -m maps\map1.txt "java -jar MyApp.jar" （使用判题器运行jar包）
+.\PreliminaryJudge.exe -m maps\map1.txt  -d out\out.txt "java -jar MyApp.jar" （使用判题器运行jar包）
 
 
 //运行后生成replay/*.rep文件，使用replayer/CodeCraft_2024_Replay.exe查看图形化回放

@@ -4,12 +4,7 @@
 
 package com.huawei.codecraft;
 
-import com.huawei.codecraft.AStarPathSearch;
-import com.huawei.codecraft.JpsPathSearch;
-import com.huawei.codecraft.Node;
-
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -99,25 +94,25 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-        Main mainInstance = new Main();//create a agents(Main)
-        mainInstance.init();//load map data
+        Main MainInstance = new Main();//create a agents(Main)
+        MainInstance.init();//load map data
         //TODO 初始化寻路算法
-        AStarPathSearch ps = new AStarPathSearch(mainInstance.ch);
+        AStarPathSearch ps = new AStarPathSearch(MainInstance.ch);
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
-            int id = mainInstance.input();
+            int id = MainInstance.input();
             //TODO 编写移动逻辑
             //移动机器人
             Random random = new Random();
             for(int i = 0; i < robot_num; i ++){
-                Robot r=mainInstance.robot[i];
+                Robot r= MainInstance.robot[i];
                 if(r.status==-1){//异常状态:返回泊位点右下角位置
-                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 2, mainInstance.berth[i * 2].y + 2);
+                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, MainInstance.berth[i * 2].x + 2, MainInstance.berth[i * 2].y + 2);
                     System.out.printf("move %d %d" + System.lineSeparator(), i, mvPath.poll());
                     r.mvPath=mvPath;
                     r.status=2;
                 }else if(r.status==0){
                     //拿到range*2范围内的所有货物gds
-                    int[][] goodsMap=mainInstance.gds;
+                    int[][] goodsMap= MainInstance.gds;
                     int range=25;
                     long MaxWeight=-1;//权重定义为货物价值/距离机器人的距离
                     LinkedList<Integer> BestPath=null;
@@ -147,10 +142,10 @@ public class Main {
                     }else{// already arrived at good position
                         //if good still exists
 
-                        if (mainInstance.gds[r.x][r.y] > 0) {
+                        if (MainInstance.gds[r.x][r.y] > 0) {
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
-                            r.mvPath=ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 2, mainInstance.berth[i * 2].y + 2);
+                            r.mvPath=ps.findPath(r.x, r.y, MainInstance.berth[i * 2].x + 2, MainInstance.berth[i * 2].y + 2);
                         } else {
                             //if good has been taken by other robot
                             r.status=0;
