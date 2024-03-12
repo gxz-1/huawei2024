@@ -11,6 +11,10 @@ public class AStarPathSearch {
 
     private int limitxbeg,limitxend;
     private int limitybeg,limityend;
+
+    public int maxIterations = 10000; // 最大迭代次数
+    public int iterations = 0;
+
     public AStarPathSearch(String[] grid,int limitxbeg,int linitybeg,int limitxend,int limityend) {
         this.grid = grid;
         this.limitxbeg=limitxbeg;
@@ -49,18 +53,38 @@ public class AStarPathSearch {
     public LinkedList<Integer> findPath(int startX, int startY, int endX, int endY) {
         this.endX = endX;
         this.endY = endY;
+
+        // 重置openList和closedList
+        openList.clear();
+        for (boolean[] row : closedList) {
+            Arrays.fill(row, false);
+        }
+
         Node startNode = new Node(startX, startY, null, 0, heuristic(startX, startY));
         openList.add(startNode);
 
+//        System.out.println("开始寻路：从 (" + startX + ", " + startY + ") 到 (" + endX + ", " + endY + ")");
+
         while (!openList.isEmpty()) {
+
+            //TODO 超过迭代次数限制
+            if (iterations++ > maxIterations) {
+//                System.out.println("超过最大迭代次数，终止搜索。");
+                return new LinkedList<>(); // 未找到路径
+            }
+
+
             Node current = openList.poll();
+//            System.out.println("当前节点: (" + current.x + ", " + current.y + "), f=" + (current.g + current.h));
             if (current.x == endX && current.y == endY) {
-                return reconstructPath(current);//!
+//                System.out.println("找到路径");
+                return reconstructPath(current);
             }
 
             closedList[current.x][current.y] = true;
 
             for (Node neighbor : findNeighbors(current)) {
+//                System.out.println("    邻居节点: (" + neighbor.x + ", " + neighbor.y + ")");
                 if (closedList[neighbor.x][neighbor.y]) continue; // 忽略已经处理过的节点
 
                 int tentativeG = current.g + 1; // 假设从当前节点到邻居的成本为1

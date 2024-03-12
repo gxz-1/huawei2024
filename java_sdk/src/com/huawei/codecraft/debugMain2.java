@@ -105,7 +105,7 @@ public class debugMain2 {
 
         Scanner scanf = null;
         try {
-            File file = new File("C:\\Users\\21232\\Desktop\\HuaweiCup\\HUAWEICup\\maps\\debuginput1.txt");
+            File file = new File("E:\\CodeWorkspace\\java\\HUAWEICup\\maps\\debuginput1.txt");
             scanf = new Scanner(file);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -126,9 +126,13 @@ public class debugMain2 {
                 assert r!=null:"robot is null";
                 if(r.status==-1){//异常状态:返回泊位点右下角位置
                     LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i].x + 2, mainInstance.berth[i].y + 2);
-                    System.out.printf("move %d %d" + System.lineSeparator(), i, mvPath.poll());
-                    r.mvPath=mvPath;
-                    r.status=2;
+                    if(mvPath.size()==0){//TODO 如果根本到不了泊位 或 迭代次数超时,则就地找货物机器人
+                        r.status=0;
+                    }else {
+                        System.out.printf("move %d %d" + System.lineSeparator(), i, mvPath.poll());
+                        r.mvPath=mvPath;
+                        r.status=2;
+                    }
                 }else if(r.status==0){
                     //拿到range*2范围内的所有货物gds
                     int[][] goodsMap=mainInstance.gds;
@@ -158,9 +162,6 @@ public class debugMain2 {
                         r.mvPath=BestPath;
                         r.status=1;
                     }
-
-                    //本循环结束，处理下一个机器人
-
                 }else if (r.status==1) {//robot is moving to target good and will get it
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
@@ -176,7 +177,6 @@ public class debugMain2 {
                             r.status=0;
                         }
                     }
-                    
                 }else if (r.status==2) {//robot is moving to berth
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
@@ -192,7 +192,6 @@ public class debugMain2 {
                     System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
                 }
             }
-
             System.out.println("OK");
             System.out.flush();
         }
