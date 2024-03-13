@@ -14,12 +14,15 @@ public class test {
     @Test
     public void jpstest() {
         // 设置起点和终点
-        int startX = 89, startY = 55;
-        int endX = 4, endY = 162;
+
+//      int startX = 89, startY = 55;
+//      int endX = 4, endY = 162;
+        int startX = 92, startY = 20;
+        int endX = 92, endY = 70;
 
         Scanner scanf = null;
         try {
-            File file = new File("E:\\CodeWorkspace\\java\\HUAWEICup\\maps\\debuginput1.txt");
+            File file = new File("HUAWEICup/maps/debuginput1.txt");
             scanf = new Scanner(file);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);

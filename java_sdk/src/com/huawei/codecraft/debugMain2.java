@@ -105,7 +105,7 @@ public class debugMain2 {
 
         Scanner scanf = null;
         try {
-            File file = new File("E:\\CodeWorkspace\\java\\HUAWEICup\\maps\\debuginput1.txt");
+            File file = new File("HUAWEICup\\maps\\debuginput1.txt");
             scanf = new Scanner(file);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -125,7 +125,7 @@ public class debugMain2 {
                 Robot r=mainInstance.robot[i];
                 assert r!=null:"robot is null";
                 if(r.status==-1){//异常状态:返回泊位点右下角位置
-                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i].x + 2, mainInstance.berth[i].y + 2);
+                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3);
                     if(mvPath.size()==0){//TODO 如果根本到不了泊位 或 迭代次数超时,则就地找货物机器人
                         r.status=0;
                     }else {
@@ -171,7 +171,7 @@ public class debugMain2 {
                         if (mainInstance.gds[r.x][r.y] > 0) {
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
-                            r.mvPath=ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 2, mainInstance.berth[i * 2].y + 2);
+                            r.mvPath=ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 3, mainInstance.berth[i * 2].y + 3);
                         } else {
                             //if good has been taken by other robot
                             r.status=0;
