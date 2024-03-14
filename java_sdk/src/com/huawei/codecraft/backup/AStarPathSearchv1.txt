@@ -1,4 +1,4 @@
-package com.huawei.codecraft;
+package com.huawei.codecraft.backup;
 
 import java.util.*;
 
@@ -11,9 +11,9 @@ import java.util.*;
  * findNeighbors: find the neighbors of the block
  * reconstructPath: reconstruct the path from the end block to the start block
  */
-public class AStarPathSearch {
+public class AStarPathSearchv1 {
     private String[] grid;//地图，每一行是一个字符串
-    private PriorityQueue<Node> openList;//待探测的边界方块，优先队列能通过node的cost自动排序，每次取出代价最低的方块
+    private PriorityQueue<Nodev1> openList;//待探测的边界方块，优先队列能通过node的cost自动排序，每次取出代价最低的方块
     private boolean[][] closedList;//为了避免重复探测，记录地图上已经探测过的方块
 
     private int limitxbeg,limitxend;//地图摘取实际有效部分，每一行用x表示，每一列用y表示
@@ -22,7 +22,7 @@ public class AStarPathSearch {
     public int maxIterations = 10000; // 最大迭代次数
     public int iterations = 0;
 
-    public AStarPathSearch(String[] grid,int limitxbeg,int linitybeg,int limitxend,int limityend) {
+    public AStarPathSearchv1(String[] grid, int limitxbeg, int linitybeg, int limitxend, int limityend) {
         this.grid = grid;
         this.limitxbeg=limitxbeg;//限制输入地图的大小[limitx,limity]
         this.limitybeg=linitybeg;
@@ -47,8 +47,8 @@ public class AStarPathSearch {
             Arrays.fill(row, false);
         }
 
-        Node startNode = new Node(startX, startY, null, 0, heuristic(startX, startY,endX,endY));
-        openList.add(startNode);//待探测列表加入起点
+        Nodev1 startNodev1 = new Nodev1(startX, startY, null, 0, heuristic(startX, startY,endX,endY));
+        openList.add(startNodev1);//待探测列表加入起点
 
         System.out.println("开始寻路：从 (" + startX + ", " + startY + ") 到 (" + endX + ", " + endY + ")");
 
@@ -57,7 +57,7 @@ public class AStarPathSearch {
 ////                System.out.println("超过最大迭代次数，终止搜索。");
 //                return new LinkedList<>(); // 未找到路径
 //            }
-            Node current = openList.poll();//取出代价最低的节点，作为当前考虑的节点
+            Nodev1 current = openList.poll();//取出代价最低的节点，作为当前考虑的节点
 //            System.out.println("当前节点: (" + current.x + ", " + current.y + "), f=" + (current.g + current.h));
             if (current.x == endX && current.y == endY) {//这个方块是终点块，说明已找到前往终点块的最优路径
 //                System.out.println("找到路径");
@@ -67,7 +67,7 @@ public class AStarPathSearch {
 
             closedList[current.x][current.y] = true;//当前节点已是最优，但尚未到达终点。
 
-            for (Node neighbor : findNeighbors(current)) {//需要取出可探测邻居节点继续探测：计算实际开销+曼哈顿距离开销
+            for (Nodev1 neighbor : findNeighbors(current)) {//需要取出可探测邻居节点继续探测：计算实际开销+曼哈顿距离开销
 //                System.out.println("    邻居节点: (" + neighbor.x + ", " + neighbor.y + ")");
 
                 int tentativeG = current.g + 1; // 假设从当前节点到邻居的成本为1，则邻居节点的前段开销=当前节点的前段开销+1
@@ -120,15 +120,15 @@ public class AStarPathSearch {
      * @param current：当前节点
      * @return list：尚未被close邻居节点列表，即可探测的节点
      */
-    private List<Node> findNeighbors(Node current) {
-        List<Node> neighbors = new ArrayList<>();
+    private List<Nodev1> findNeighbors(Nodev1 current) {
+        List<Nodev1> neighbors = new ArrayList<>();
         int[] dx = {0, 1, 0, -1};
         int[] dy = {1, 0, -1, 0}; // 四个基本方向
 
         for (int i = 0; i < 4; i++) {
             int nx = current.x + dx[i], ny = current.y + dy[i];
             if (isValid(nx, ny)) {//如果邻居节点尚未被close
-                neighbors.add(new Node(nx, ny, current, 0, 0));
+                neighbors.add(new Nodev1(nx, ny, current, 0, 0));
             }
         }
 
@@ -137,8 +137,8 @@ public class AStarPathSearch {
 
 
 
-//    private List<Node> reconstructPath(Node node) {
-//        List<Node> path = new ArrayList<>();
+//    private List<Nodev2> reconstructPath(Nodev2 node) {
+//        List<Nodev2> path = new ArrayList<>();
 //        while (node != null) {
 //            path.add(node);
 //            node = node.parent;
@@ -147,23 +147,23 @@ public class AStarPathSearch {
 //        return path;
 //    }
 
-    private LinkedList<Integer> reconstructPath(Node node) {
+    private LinkedList<Integer> reconstructPath(Nodev1 nodev1) {
         LinkedList<Integer> path = new LinkedList<>();
-        while (node != null && node.parent != null) {
-            if(node.x==node.parent.x){ //!
-                if((node.parent.y-node.y)==1){
+        while (nodev1 != null && nodev1.parent != null) {
+            if(nodev1.x== nodev1.parent.x){ //!
+                if((nodev1.parent.y- nodev1.y)==1){
                     path.push(1);//右移
-                }else if((node.parent.y-node.y)==-1){
+                }else if((nodev1.parent.y- nodev1.y)==-1){
                     path.push(0);//左移
                 }
-            }else if(node.y==node.parent.y){
-                if((node.parent.x-node.x)==1){
+            }else if(nodev1.y== nodev1.parent.y){
+                if((nodev1.parent.x- nodev1.x)==1){
                     path.push(2);//上移
-                }else if((node.parent.x-node.x)==-1){
+                }else if((nodev1.parent.x- nodev1.x)==-1){
                     path.push(3);//下移
                 }
             }
-            node = node.parent;
+            nodev1 = nodev1.parent;
         }
         return path;
     }

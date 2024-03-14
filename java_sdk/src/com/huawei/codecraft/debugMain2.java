@@ -4,6 +4,8 @@
 
 package com.huawei.codecraft;
 
+//import com.huawei.codecraft.backup.AStarPathSearchv1;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
@@ -24,6 +26,8 @@ public class debugMain2 {
 
     private int money, boat_capacity, id;
     private String[] ch = new String[N];//this ch means : the map
+
+    private int[][] blockArray = new int[n][n];// the blocks in map
     private int[][] gds = new int[N][N];// this gds means : the goods?
 
     private Robot[] robot = new Robot[robot_num + 10];//why +10?
@@ -42,6 +46,22 @@ public class debugMain2 {
         for(int i = 1; i <= n; i++) {
             ch[i] = scanf.nextLine();
         }
+        //获取地图上的障碍物信息
+        LinkedList<int[]> blockList = new LinkedList<>();
+        for(int i = 1; i <= n; i++) {//ch第0行是null
+            for(int j = 0; j < n; j++) {
+                if(ch[i].charAt(j) == '#' || ch[i].charAt(j) == 'A'|| ch[i].charAt(j) == '*') {
+                    blockList.add(new int[]{i-1, j});
+                }
+            }
+        }
+        //linkedlist中的障碍点添加到blockArray中
+         blockArray = new int[2][blockList.size()];
+        for (int i = 0; i < blockList.size(); i++) {
+            blockArray[0][i] = blockList.get(i)[0]; // 假设障碍点是以坐标对象存储的，getX()获取横坐标
+            blockArray[1][i] = blockList.get(i)[1]; // 假设障碍点是以坐标对象存储的，getY()获取纵坐标
+        }
+
         for(int i = 0; i < robot_num; i++) {
             robot[i] = new Robot();
         }
@@ -114,19 +134,22 @@ public class debugMain2 {
         debugMain2 mainInstance = new debugMain2();//create a agents(Main)
         mainInstance.init(scanf);//load map data
         //初始化寻路算法
-        AStarPathSearch ps = new AStarPathSearch(mainInstance.ch, 1, 1, 200, 200);
+
+//        AStarPathSearchv1 ps = new AStarPathSearchv1(mainInstance.ch, 1, 1, 200, 200);
         Random random = new Random();
+
+        //与判题器交互
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
             int id = mainInstance.input(scanf);
-            //TODO 编写移动逻辑
-            //移动机器人
 
-            for(int i = 0; i < robot_num; i ++){
+
+            for(int i = 0; i < robot_num; i ++){ // 移动机器人-------------------
                 Robot r=mainInstance.robot[i];
                 assert r!=null:"robot is null";
                 if(r.status==-1){//异常状态:返回泊位点右下角位置
-                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3);
-                    if(mvPath.size()==0){//TODO 如果根本到不了泊位 或 迭代次数超时,则就地找货物机器人
+                    LinkedList<Integer> mvPath = AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3,mainInstance.blockArray);
+//                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3);
+                    if(mvPath.size()==0){//如果根本到不了泊位 或 迭代次数超时,则就地找货物机器人
                         r.status=0;
                     }else {
                         System.out.printf("move %d %d" + System.lineSeparator(), i, mvPath.poll());
@@ -143,7 +166,8 @@ public class debugMain2 {
                     for(int j=r.x-range;j<r.x+range;++j){
                         for(int k=r.y-range;k<r.y+range;++k){
                             if(j>=0 && j<goodsMap.length && k>=0 && k<goodsMap[0].length && goodsMap[j][k]!=0){//是货物
-                                LinkedList<Integer> path = ps.findPath(r.x, r.y, j, k);
+                                LinkedList<Integer> path = AStar.findPath(r.x, r.y, j, k,mainInstance.blockArray);
+//                                LinkedList<Integer> path = ps.findPath(r.x, r.y, j, k);//切换成AStarv2寻路
                                 if(path.size()!=0 &&  (goodsMap[j][k]/path.size())>MaxWeight){//更新权重最大的物品
                                     MaxWeight=goodsMap[j][k]/path.size();
                                     BestPath=path;
@@ -171,7 +195,8 @@ public class debugMain2 {
                         if (mainInstance.gds[r.x][r.y] > 0) {
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
-                            r.mvPath=ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 3, mainInstance.berth[i * 2].y + 3);
+                            r.mvPath= AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3,mainInstance.blockArray);
+//                            r.mvPath=ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 3, mainInstance.berth[i * 2].y + 3);
                         } else {
                             //if good has been taken by other robot
                             r.status=0;

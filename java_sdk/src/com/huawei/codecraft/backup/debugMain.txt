@@ -2,7 +2,7 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2024-2024. All rights reserved.
  */
 
-package com.huawei.codecraft;
+package com.huawei.codecraft.backup;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -98,7 +98,7 @@ public class debugMain {
         debugMain mainInstance = new debugMain();
         mainInstance.init(scanf);//load map data
         //TODO 初始化寻路算法
-        AStarPathSearch ps = new AStarPathSearch(mainInstance.ch, 1, 1, 200, 200);
+        AStarPathSearchv1 ps = new AStarPathSearchv1(mainInstance.ch, 1, 1, 200, 200);
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
             int id = mainInstance.input(scanf);
             //TODO 编写移动逻辑

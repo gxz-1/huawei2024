@@ -1,4 +1,6 @@
-package com.huawei.codecraft;
+package com.huawei.codecraft.backup;
+
+import com.huawei.codecraft.backup.Nodev1;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +17,8 @@ public class JpsPathSearch {
 
     private String[] grid;
     private int endX, endY;
-    private PriorityQueue<Node> openList;
-    private Map<Integer, Node> closedList;
+    private PriorityQueue<Nodev1> openList;
+    private Map<Integer, Nodev1> closedList;
 
     public JpsPathSearch(String[] grid) {
         this.grid = grid;
@@ -33,38 +35,38 @@ public class JpsPathSearch {
         return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length() && (grid[x].charAt(y) == '.');
     }
 
-    private List<Node> findNeighbors(Node current) {
-        List<Node> neighbors = new ArrayList<>();
+    private List<Nodev1> findNeighbors(Nodev1 current) {
+        List<Nodev1> neighbors = new ArrayList<>();
         for (int i = 0; i < 8; i++) { // 包括对角线方向
             int nx = current.x + dx[i];
             int ny = current.y + dy[i];
             if (isValid(nx, ny)) {
-                neighbors.add(new Node(nx, ny, current, 0, heuristic(nx, ny)));
+                neighbors.add(new Nodev1(nx, ny, current, 0, heuristic(nx, ny)));
             }
         }
         return neighbors;
     }
-    private Node jump(int x, int y, int px, int py) {
+    private Nodev1 jump(int x, int y, int px, int py) {
         if (!isValid(x, y)) return null;
-        if (x == endX && y == endY) return new Node(x, y, null, 0, 0);
+        if (x == endX && y == endY) return new Nodev1(x, y, null, 0, 0);
 
         int dx = x - px, dy = y - py;
         // 检查强迫邻居
         if (dx != 0 && dy != 0) {
             if ((isValid(x - dx, y + dy) && !isValid(x - dx, y)) ||
                     (isValid(x + dx, y - dy) && !isValid(x, y - dy))) {
-                return new Node(x, y, null, 0, 0);
+                return new Nodev1(x, y, null, 0, 0);
             }
         } else {
             if (dx != 0) {
                 if ((isValid(x + dx, y + 1) && !isValid(x, y + 1)) ||
                         (isValid(x + dx, y - 1) && !isValid(x, y - 1))) {
-                    return new Node(x, y, null, 0, 0);
+                    return new Nodev1(x, y, null, 0, 0);
                 }
             } else if (dy != 0) {
                 if ((isValid(x + 1, y + dy) && !isValid(x + 1, y)) ||
                         (isValid(x - 1, y + dy) && !isValid(x - 1, y))) {
-                    return new Node(x, y, null, 0, 0);
+                    return new Nodev1(x, y, null, 0, 0);
                 }
             }
         }
@@ -72,7 +74,7 @@ public class JpsPathSearch {
         // 在对角方向上递归跳跃
         if (dx != 0 && dy != 0) {
             if (jump(x + dx, y, x, y) != null || jump(x, y + dy, x, y) != null) {
-                return new Node(x, y, null, 0, 0);
+                return new Nodev1(x, y, null, 0, 0);
             }
         }
 
@@ -84,24 +86,24 @@ public class JpsPathSearch {
         return null;
     }
 
-    private List<Node> reconstructPath(Node node) {
-        List<Node> path = new ArrayList<>();
-        while (node != null) {
-            path.add(node);
-            node = node.parent;
+    private List<Nodev1> reconstructPath(Nodev1 nodev1) {
+        List<Nodev1> path = new ArrayList<>();
+        while (nodev1 != null) {
+            path.add(nodev1);
+            nodev1 = nodev1.parent;
         }
         Collections.reverse(path);
         return path;
     }
 
-    public List<Node> findPath(int startX, int startY, int endX, int endY) {
+    public List<Nodev1> findPath(int startX, int startY, int endX, int endY) {
         this.endX = endX;
         this.endY = endY;
-        Node startNode = new Node(startX, startY, null, 0, heuristic(startX, startY));
-        openList.add(startNode);
+        Nodev1 startNodev1 = new Nodev1(startX, startY, null, 0, heuristic(startX, startY));
+        openList.add(startNodev1);
 
         while (!openList.isEmpty()) {
-            Node current = openList.poll();
+            Nodev1 current = openList.poll();
             if (current.x == endX && current.y == endY) {
                 return reconstructPath(current);
             }
@@ -110,12 +112,12 @@ public class JpsPathSearch {
             for (int i = 0; i < 8; i++) {
                 int nx = current.x + dx[i];
                 int ny = current.y + dy[i];
-                Node jumpNode = jump(nx, ny, current.x, current.y);
-                if (jumpNode != null && !closedList.containsKey(jumpNode.x * grid[0].length() + jumpNode.y)) {
-                    jumpNode.g = current.g + Math.abs(jumpNode.x - current.x) + Math.abs(jumpNode.y - current.y);
-                    jumpNode.h = heuristic(jumpNode.x, jumpNode.y);
-                    jumpNode.parent = current;
-                    openList.add(jumpNode);
+                Nodev1 jumpNodev1 = jump(nx, ny, current.x, current.y);
+                if (jumpNodev1 != null && !closedList.containsKey(jumpNodev1.x * grid[0].length() + jumpNodev1.y)) {
+                    jumpNodev1.g = current.g + Math.abs(jumpNodev1.x - current.x) + Math.abs(jumpNodev1.y - current.y);
+                    jumpNodev1.h = heuristic(jumpNodev1.x, jumpNodev1.y);
+                    jumpNodev1.parent = current;
+                    openList.add(jumpNodev1);
                 }
             }
         }

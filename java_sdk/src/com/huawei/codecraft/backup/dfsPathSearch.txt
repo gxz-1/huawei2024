@@ -1,4 +1,6 @@
-package com.huawei.codecraft;
+package com.huawei.codecraft.backup;
+
+import com.huawei.codecraft.backup.Nodev1;
 
 import java.util.List;
 
@@ -20,15 +22,15 @@ public class dfsPathSearch {
         return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length() && grid[x].charAt(y) == '.' && !visited[x][y];
     }
 
-    public List<Node> findPath(int startX, int startY, int endX, int endY) {
+    public List<Nodev1> findPath(int startX, int startY, int endX, int endY) {
         this.endX = endX;
         this.endY = endY;
-        Stack<Node> stack = new Stack<>();
-        List<Node> path = new ArrayList<>();
+        Stack<Nodev1> stack = new Stack<>();
+        List<Nodev1> path = new ArrayList<>();
 
-        stack.push(new Node(startX, startY, null));
+        stack.push(new Nodev1(startX, startY, null));
         while (!stack.isEmpty()) {
-            Node current = stack.pop();
+            Nodev1 current = stack.pop();
             if (visited[current.x][current.y]) continue;
             visited[current.x][current.y] = true;
 
@@ -46,7 +48,7 @@ public class dfsPathSearch {
             for (int i = 0; i < 4; i++) {
                 int nx = current.x + dx[i], ny = current.y + dy[i];
                 if (isValid(nx, ny)) {
-                    stack.push(new Node(nx, ny, current));
+                    stack.push(new Nodev1(nx, ny, current));
                 }
             }
         }

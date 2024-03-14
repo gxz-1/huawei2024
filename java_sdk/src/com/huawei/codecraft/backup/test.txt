@@ -1,7 +1,6 @@
-package com.huawei.codecraft.pathsearch;
+package com.huawei.codecraft.backup;
 
 
-import com.huawei.codecraft.AStarPathSearch;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,8 +16,8 @@ public class test {
 
 //      int startX = 89, startY = 55;
 //      int endX = 4, endY = 162;
-        int startX = 92, startY = 20;
-        int endX = 92, endY = 70;
+        int startX = 108, startY = 74;
+        int endX = 22, endY = 89;
 
         Scanner scanf = null;
         try {
@@ -35,7 +34,7 @@ public class test {
         //TODO 创建JPS实例并寻找路径
 //        JpsPathSearch ps = new JpsPathSearch(grid);
         //使用A*
-        AStarPathSearch ps = new AStarPathSearch(ch,1,1,200,200);
+        AStarPathSearchv1 ps = new AStarPathSearchv1(ch,1,1,200,200);
         //使用dfs
 //        dfsPathSearch ps = new dfsPathSearch(grid);
 

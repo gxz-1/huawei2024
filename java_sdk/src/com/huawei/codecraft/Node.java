@@ -1,33 +1,116 @@
 package com.huawei.codecraft;
 
 /**
- * Node is map unit of a possible path
-
+ * Node Class
+ *
+ * @author Marcelo Surriabre
+ * @version 2.0, 2018-02-23
  */
-public class Node implements Comparable<Node>{
-    int x, y;
-    Node parent;
-    int g, h,f; // g: 起点到当前节点的成本, h: 当前节点到终点的估算成本
+public class Node {
 
-    public Node(int x, int y, Node parent, int g, int h) {
-        this.x = x;
-        this.y = y;
-        this.parent = parent;
-        this.g = g;
+    private int g;
+    private int f;
+    private int h;
+    private int row;
+    private int col;
+    private boolean isBlock;
+    private Node parent;
+
+    public Node(int row, int col) {
+        super();
+        this.row = row;
+        this.col = col;
+    }
+
+    public void calculateHeuristic(Node finalNode) {
+        this.h = Math.abs(finalNode.getRow() - getRow()) + Math.abs(finalNode.getCol() - getCol());
+    }
+
+    public void setNodeData(Node currentNode, int cost) {
+        int gCost = currentNode.getG() + cost;
+        setParent(currentNode);
+        setG(gCost);
+        calculateFinalCost();
+    }
+
+    public boolean checkBetterPath(Node currentNode, int cost) {
+        int gCost = currentNode.getG() + cost;
+        if (gCost < getG()) {
+            setNodeData(currentNode, cost);
+            return true;
+        }
+        return false;
+    }
+
+    private void calculateFinalCost() {
+        int finalCost = getG() + getH();
+        setF(finalCost);
+    }
+
+    @Override
+    public boolean equals(Object arg0) {
+        Node other = (Node) arg0;
+        return this.getRow() == other.getRow() && this.getCol() == other.getCol();
+    }
+
+    @Override
+    public String toString() {
+        return "Node [row=" + row + ", col=" + col + "]";
+    }
+
+    public int getH() {
+        return h;
+    }
+
+    public void setH(int h) {
         this.h = h;
     }
 
-    public Node(int x, int y, Node parent) {
-        this.x = x;
-        this.y = y;
+    public int getG() {
+        return g;
+    }
+
+    public void setG(int g) {
+        this.g = g;
+    }
+
+    public int getF() {
+        return f;
+    }
+
+    public void setF(int f) {
+        this.f = f;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent) {
         this.parent = parent;
-
     }
 
-
-    @Override
-    public int compareTo(Node o) {
-        return Integer.compare(this.g + this.h, o.g + o.h);
+    public boolean isBlock() {
+        return isBlock;
     }
-    //node在优先队列中的大小比较是通过这行代码实现的
+
+    public void setBlock(boolean isBlock) {
+        this.isBlock = isBlock;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
+    }
 }
