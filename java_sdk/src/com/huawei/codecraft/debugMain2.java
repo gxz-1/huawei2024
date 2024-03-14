@@ -122,7 +122,7 @@ public class debugMain2 {
 
         Scanner scanf = null;
         try {
-            File file = new File("maps\\debuginput1.txt");
+            File file = new File("maps\\debuginput2.txt");
             scanf = new Scanner(file);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -209,20 +209,6 @@ public class debugMain2 {
                     }
                 }
             }
-            //移动船
-//            for (int i=0;i<5;++i){
-//                Boat boat=mainInstance.boat[i];
-//                if(boat.status==0 || boat.status==2){//0:船移动中 2:泊位外等待
-//                    //不执行操作
-//                }else if(boat.status==1){ //1:正常运行状态(即装货状态或运输完成状态)
-//                    if(zhen==1 || boat.pos==-1){//船在虚拟点
-//                        System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
-//                    }else if( zhen==1000 || (zhen>=4000 && zhen<=4200)||(zhen>=7000 && zhen<=7200)||(zhen>=10000 && zhen<=10200)||(zhen>=13000 && zhen<=13200)){
-//                        //移动到虚拟点
-//                        System.out.printf("go %d" + System.lineSeparator(), i);
-//                    }
-//                }
-//            }
             //移动船
             for (int i=0;i<5;++i){
                 Boat boat=mainInstance.boat[i];

@@ -165,7 +165,7 @@ public class Main2 {
                     }
                     if(BestPath==null){
                         //范围内都没有物品，让机器人随机游走
-                        //System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
+                        System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
                         r.status=0;
                     }else {
                         //有物品
