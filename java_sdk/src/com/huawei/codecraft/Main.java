@@ -144,7 +144,7 @@ public class Main {
                 }else if(r.status==0){
                     //拿到range*2范围内的所有货物gds
                     int[][] goodsMap=mainInstance.gds;
-                    int range=25;
+                    int range=100;
                     long MaxWeight=-1;//权重定义为货物价值/距离机器人的距离
                     LinkedList<Integer> BestPath=null;
                     //搜索range*2范围内的所有货物gds
@@ -152,7 +152,6 @@ public class Main {
                         for(int k=r.y-range;k<r.y+range;++k){
                             if(j>=0 && j<goodsMap.length && k>=0 && k<goodsMap[0].length && goodsMap[j][k]!=0){//是货物
                                 LinkedList<Integer> path = AStar.findPath(r.x, r.y, j, k,mainInstance.blockArray);
-//                                LinkedList<Integer> path = ps.findPath(r.x, r.y, j, k);//切换成AStarv2寻路
                                 if(path.size()!=0 &&  (goodsMap[j][k]/path.size())>MaxWeight){//更新权重最大的物品
                                     MaxWeight=goodsMap[j][k]/path.size();
                                     BestPath=path;
@@ -171,7 +170,7 @@ public class Main {
                         r.mvPath=BestPath;
                         r.status=1;
                     }
-                }else if (r.status==1) {//robot is moving to target good and will get it
+                }else if (r.status==1) {//机器人前往货物处
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
                     }else{// already arrived at good position
@@ -180,14 +179,14 @@ public class Main {
                             mainInstance.gds[r.x][r.y]=0;//将这个物品标记为消失
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
-                            r.mvPath= AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3,mainInstance.blockArray);
+                            r.mvPath= AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 2, mainInstance.berth[i].y + 2,mainInstance.blockArray);
 //                            r.mvPath=ps.findPath(r.x, r.y, mainInstance.berth[i * 2].x + 3, mainInstance.berth[i * 2].y + 3);
                         } else {
                             //if good has been taken by other robot
                             r.status=0;
                         }
                     }
-                }else if (r.status==2) {//robot is moving to berth
+                }else if (r.status==2) {//机器人前往泊位
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
                     }else{// already arrived at berth
