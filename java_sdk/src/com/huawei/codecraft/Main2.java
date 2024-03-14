@@ -18,7 +18,7 @@ import java.util.Scanner;
  *
  * @since 2024-02-05
  */
-public class debugMain2 {
+public class Main2 {
     //prepare containers for input
     private static final int n = 200; //map has 200 lines
     private static final int robot_num = 10;
@@ -41,8 +41,8 @@ public class debugMain2 {
     /**
      *Main(agents) load the map data from pipe of System.in , within 5s
      */
-    private void init(Scanner scanf) {
-
+    private void init() {
+        Scanner scanf = new Scanner(System.in);
         //输入地图
         for(int i = 1; i <= n; i++) {
             ch[i] = scanf.nextLine();
@@ -72,7 +72,6 @@ public class debugMain2 {
         }//now we have the Berth objects in berth array
         this.boat_capacity = scanf.nextInt();//船的容积
         String okk = scanf.nextLine();//priliminaryJudge.exe input "OK" means input finished.
-        scanf.nextLine();
         System.out.println("OK");
         System.out.flush();
 
@@ -85,7 +84,8 @@ public class debugMain2 {
      * Main(agents) agents receive the input data of every envirment zhen through pipe of System.in
      * @return id
      */
-    private int input(Scanner scanf) {
+    private int input() {
+        Scanner scanf = new Scanner(System.in);
         this.id = scanf.nextInt();//zhen serial number
         this.money = scanf.nextInt();// current total rewards of the agents
         int num = scanf.nextInt();// number of new goods in map
@@ -108,7 +108,6 @@ public class debugMain2 {
             boat[i].status = scanf.nextInt();//0:moving 1:workable 2:wating outside berth
             boat[i].pos = scanf.nextInt();//berth_id or -1(in moving)
         }
-        scanf.nextLine();
         String okk = scanf.nextLine();
         return id;// zhen id
     }
@@ -118,17 +117,8 @@ public class debugMain2 {
      * @param args
      */
     public static void main(String[] args) {
-
-        Scanner scanf = null;
-        try {
-            File file = new File("maps\\debuginput2.txt");
-            scanf = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        debugMain2 mainInstance = new debugMain2();//create a agents(Main)
-        mainInstance.init(scanf);//load map data
+        Main2 mainInstance = new Main2();//create a agents(Main)
+        mainInstance.init();//load map data
         //初始化寻路算法
 
 //        AStarPathSearchv1 ps = new AStarPathSearchv1(mainInstance.ch, 1, 1, 200, 200);
@@ -136,7 +126,9 @@ public class debugMain2 {
 
         //与判题器交互
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
-            int id = mainInstance.input(scanf);
+            int id = mainInstance.input();
+
+
             for(int i = 0; i < robot_num; i ++){ // 移动机器人-------------------
                 Robot r=mainInstance.robot[i];
                 assert r!=null:"robot is null";
@@ -172,7 +164,7 @@ public class debugMain2 {
                     }
                     if(BestPath==null){
                         //范围内都没有物品，让机器人随机游走
-                        System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
+                        //System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
                         r.status=0;
                     }else {
                         //有物品
@@ -185,7 +177,6 @@ public class debugMain2 {
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
                     }else{// already arrived at good position
                         //if good still exists
-
                         if (mainInstance.gds[r.x][r.y] > 0) {
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
