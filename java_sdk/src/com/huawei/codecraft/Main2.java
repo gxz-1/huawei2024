@@ -178,6 +178,7 @@ public class Main2 {
                     }else{// already arrived at good position
                         //if good still exists
                         if (mainInstance.gds[r.x][r.y] > 0) {
+                            mainInstance.gds[r.x][r.y]=0;//将这个物品标记为消失
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
                             r.mvPath= AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3,mainInstance.blockArray);

@@ -137,6 +137,9 @@ public class debugMain2 {
         //与判题器交互
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
             int id = mainInstance.input(scanf);
+            if(zhen==2000){
+                System.out.println("1");
+            }
             for(int i = 0; i < robot_num; i ++){ // 移动机器人-------------------
                 Robot r=mainInstance.robot[i];
                 assert r!=null:"robot is null";
@@ -185,8 +188,8 @@ public class debugMain2 {
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
                     }else{// already arrived at good position
                         //if good still exists
-
                         if (mainInstance.gds[r.x][r.y] > 0) {
+                            mainInstance.gds[r.x][r.y]=0;//将这个物品标记为消失
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
                             r.mvPath= AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3,mainInstance.blockArray);
