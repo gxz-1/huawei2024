@@ -88,17 +88,17 @@ public class AStar {
             int colMove = nextNode.getCol()-currentNode.getCol();
             int[] nodeMove = new int[]{rowMove, colMove};
             switch (Arrays.toString(nodeMove)){
-                case "[0, 1]"://应该上移
-                    result.add(2);
-                    break;
-                case "[0, -1]"://应该下移
-                    result.add(3);
-                    break;
-                case "[1, 0]"://应该右移
+                case "[0, 1]"://y加1，应该右移
                     result.add(0);
                     break;
-                case "[-1, 0]"://应该左移
+                case "[0, -1]"://y-1，应该左移
                     result.add(1);
+                    break;
+                case "[1, 0]"://x加1，应该下移
+                    result.add(3);
+                    break;
+                case "[-1, 0]"://x-1，应该上移
+                    result.add(2);
                     break;
                 default:
                     break;
