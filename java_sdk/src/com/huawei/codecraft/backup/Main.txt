@@ -2,12 +2,12 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2024-2024. All rights reserved.
  */
 
-package com.huawei.codecraft;
+package com.huawei.codecraft.backup;
 
 //import com.huawei.codecraft.backup.AStarPathSearchv1;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import com.huawei.codecraft.AStar;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -18,7 +18,7 @@ import java.util.Scanner;
  *
  * @since 2024-02-05
  */
-public class debugMain2 {
+public class Main {
     //prepare containers for input
     private static final int n = 200; //map has 200 lines
     private static final int robot_num = 10;
@@ -41,8 +41,8 @@ public class debugMain2 {
     /**
      *Main(agents) load the map data from pipe of System.in , within 5s
      */
-    private void init(Scanner scanf) {
-
+    private void init() {
+        Scanner scanf = new Scanner(System.in);
         //输入地图
         for(int i = 1; i <= n; i++) {
             ch[i] = scanf.nextLine();
@@ -72,7 +72,6 @@ public class debugMain2 {
         }//now we have the Berth objects in berth array
         this.boat_capacity = scanf.nextInt();//船的容积
         String okk = scanf.nextLine();//priliminaryJudge.exe input "OK" means input finished.
-        scanf.nextLine();
         System.out.println("OK");
         System.out.flush();
 
@@ -86,7 +85,8 @@ public class debugMain2 {
      * Main(agents) agents receive the input data of every envirment zhen through pipe of System.in
      * @return id
      */
-    private int input(Scanner scanf) {
+    private int input() {
+        Scanner scanf = new Scanner(System.in);
         this.id = scanf.nextInt();//zhen serial number
         this.money = scanf.nextInt();// current total rewards of the agents
         int num = scanf.nextInt();// number of new goods in map
@@ -109,7 +109,6 @@ public class debugMain2 {
             boat[i].status = scanf.nextInt();//0:moving 1:workable 2:wating outside berth
             boat[i].pos = scanf.nextInt();//berth_id or -1(in moving)
         }
-        scanf.nextLine();
         String okk = scanf.nextLine();
         return id;// zhen id
     }
@@ -119,17 +118,8 @@ public class debugMain2 {
      * @param args
      */
     public static void main(String[] args) {
-
-        Scanner scanf = null;
-        try {
-            File file = new File("maps\\debuginput1.txt");
-            scanf = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        debugMain2 mainInstance = new debugMain2();//create a agents(Main)
-        mainInstance.init(scanf);//load map data
+        Main mainInstance = new Main();//create a agents(Main)
+        mainInstance.init();//load map data
         //初始化寻路算法
 
 //        AStarPathSearchv1 ps = new AStarPathSearchv1(mainInstance.ch, 1, 1, 200, 200);
@@ -137,13 +127,15 @@ public class debugMain2 {
 
         //与判题器交互
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
-            int id = mainInstance.input(scanf);
-            if(zhen>=3000){
-                System.out.println("1");
-            }
-            for(int i = 0; i < robot_num; i ++){ // 移动机器人-------------------
+            int id = mainInstance.input();
+
+            /*
+                -----------------机器人操作-----------------
+             */
+            for(int i = 0; i < robot_num; i ++){
                 Robot r=mainInstance.robot[i];
                 assert r!=null:"robot is null";
+
                 if(r.status==-1){//异常状态:返回泊位点右下角位置
                     LinkedList<Integer> mvPath = AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3,mainInstance.blockArray);
 //                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3);
@@ -154,7 +146,9 @@ public class debugMain2 {
                         r.mvPath=mvPath;
                         r.status=2;
                     }
-                }else if(r.status==0){
+
+
+                }else if(r.status==0){//机器人空闲
                     //拿到range*2范围内的所有货物gds
                     int[][] goodsMap=mainInstance.gds;
                     int range=25;
@@ -165,7 +159,6 @@ public class debugMain2 {
                         for(int k=r.y-range;k<r.y+range;++k){
                             if(j>=0 && j<goodsMap.length && k>=0 && k<goodsMap[0].length && goodsMap[j][k]!=0){//是货物
                                 LinkedList<Integer> path = AStar.findPath(r.x, r.y, j, k,mainInstance.blockArray);
-//                                LinkedList<Integer> path = ps.findPath(r.x, r.y, j, k);//切换成AStarv2寻路
                                 if(path.size()!=0 &&  (goodsMap[j][k]/path.size())>MaxWeight){//更新权重最大的物品
                                     MaxWeight=goodsMap[j][k]/path.size();
                                     BestPath=path;
@@ -184,6 +177,8 @@ public class debugMain2 {
                         r.mvPath=BestPath;
                         r.status=1;
                     }
+
+
                 }else if (r.status==1) {//robot is moving to target good and will get it
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
@@ -200,6 +195,8 @@ public class debugMain2 {
                             r.status=0;
                         }
                     }
+
+
                 }else if (r.status==2) {//robot is moving to berth
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
@@ -209,21 +206,10 @@ public class debugMain2 {
                     }
                 }
             }
-            //移动船
-//            for (int i=0;i<5;++i){
-//                Boat boat=mainInstance.boat[i];
-//                if(boat.status==0 || boat.status==2){//0:船移动中 2:泊位外等待
-//                    //不执行操作
-//                }else if(boat.status==1){ //1:正常运行状态(即装货状态或运输完成状态)
-//                    if(zhen==1 || boat.pos==-1){//船在虚拟点
-//                        System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
-//                    }else if( zhen==1000 || (zhen>=4000 && zhen<=4200)||(zhen>=7000 && zhen<=7200)||(zhen>=10000 && zhen<=10200)||(zhen>=13000 && zhen<=13200)){
-//                        //移动到虚拟点
-//                        System.out.printf("go %d" + System.lineSeparator(), i);
-//                    }
-//                }
-//            }
-            //移动船
+            /*
+             -----------------船只操作-----------------
+             */
+//
             for (int i=0;i<5;++i){
                 Boat boat=mainInstance.boat[i];
                 if(boat.status==0 || boat.status==2){//0:船移动中 2:泊位外等待
@@ -236,9 +222,11 @@ public class debugMain2 {
                         System.out.printf("go %d" + System.lineSeparator(), i);
                         boat.flag=(boat.flag==1)?0:1;
                     }
+
                 }
             }
-            System.out.println(zhen+"OK");
+
+            System.out.println("OK");
             System.out.flush();
         }
     }
@@ -273,6 +261,8 @@ public class debugMain2 {
         int y;
         int transport_time;
         int loading_speed;
+
+        boolean ship=false;//泊位占用信号
         public Berth(){}
         public Berth(int x, int y, int transport_time, int loading_speed) {
             this.x = x;
@@ -289,6 +279,6 @@ public class debugMain2 {
         int num;
         int pos;
         int status;
-        int flag;
+        int flag=0;
     }
 }
