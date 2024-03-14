@@ -78,6 +78,7 @@ public class debugMain2 {
 
         for(int i = 0; i < 5; i ++) {
             boat[i] = new Boat();
+            boat[i].flag=0;
         }
     }
 
@@ -121,7 +122,7 @@ public class debugMain2 {
 
         Scanner scanf = null;
         try {
-            File file = new File("maps\\debuginput2.txt");
+            File file = new File("maps\\debuginput1.txt");
             scanf = new Scanner(file);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -137,7 +138,7 @@ public class debugMain2 {
         //与判题器交互
         for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
             int id = mainInstance.input(scanf);
-            if(zhen==4000){
+            if(zhen>=3000){
                 System.out.println("1");
             }
             for(int i = 0; i < robot_num; i ++){ // 移动机器人-------------------
@@ -175,7 +176,7 @@ public class debugMain2 {
                     }
                     if(BestPath==null){
                         //范围内都没有物品，让机器人随机游走
-//                        System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
+                        System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
                         r.status=0;
                     }else {
                         //有物品
@@ -209,16 +210,31 @@ public class debugMain2 {
                 }
             }
             //移动船
+//            for (int i=0;i<5;++i){
+//                Boat boat=mainInstance.boat[i];
+//                if(boat.status==0 || boat.status==2){//0:船移动中 2:泊位外等待
+//                    //不执行操作
+//                }else if(boat.status==1){ //1:正常运行状态(即装货状态或运输完成状态)
+//                    if(zhen==1 || boat.pos==-1){//船在虚拟点
+//                        System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
+//                    }else if( zhen==1000 || (zhen>=4000 && zhen<=4200)||(zhen>=7000 && zhen<=7200)||(zhen>=10000 && zhen<=10200)||(zhen>=13000 && zhen<=13200)){
+//                        //移动到虚拟点
+//                        System.out.printf("go %d" + System.lineSeparator(), i);
+//                    }
+//                }
+//            }
+            //移动船
             for (int i=0;i<5;++i){
                 Boat boat=mainInstance.boat[i];
                 if(boat.status==0 || boat.status==2){//0:船移动中 2:泊位外等待
                     //不执行操作
                 }else if(boat.status==1){ //1:正常运行状态(即装货状态或运输完成状态)
                     if(zhen==1 || boat.pos==-1){//船在虚拟点
-                        System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
-                    }else if( (zhen>=4000 && zhen<=4200)||(zhen>=7000 && zhen<=7200)||(zhen>=10000 && zhen<=10200)||(zhen>=13000 && zhen<=13200)){
+                        System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);
+                    }else{//从3000帧开始不停的运
                         //移动到虚拟点
                         System.out.printf("go %d" + System.lineSeparator(), i);
+                        boat.flag=(boat.flag==1)?0:1;
                     }
                 }
             }
@@ -273,5 +289,6 @@ public class debugMain2 {
         int num;
         int pos;
         int status;
+        int flag;
     }
 }
