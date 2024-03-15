@@ -134,7 +134,7 @@ public class Main {
                 assert r!=null:"robot is null";
                 if(r.status==-1){//异常状态:返回泊位点右下角位置
 
-                    //机器人未携带货物，则就地找货物机器人
+                    //机器人未携带货物，则就地找货物
                     if(r.goods==0){
                         r.status=0;
                     }else//机器人携带货物，则重新随机寻路一个泊位
@@ -142,8 +142,8 @@ public class Main {
                         //随机一个泊位编号
                         int berthId = random.nextInt(10);
                         //TODO 测试避障寻路是否有用，是否能提高分数
-//                        r.mvPath=AStar.findPath(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2,mainInstance.blockArray);
-                        r.mvPath= mainInstance.findPathAvoidingRobots(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2, i);
+                        r.mvPath=AStar.findPath(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2,mainInstance.blockArray);
+//                        r.mvPath= mainInstance.findPathAvoidingRobots(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2, i);
                         //如果能找到路径，则前往泊位，否则跳过此帧
                         if(r.mvPath.size()>0){
                             r.status=2;
@@ -176,9 +176,8 @@ public class Main {
 
                     }
                     if(BestGood!=null){//才能试图寻找BestPath
-                        //TODO:取货物是否需要避障寻路？
-//                        BestPath = AStar.findPath(r.x, r.y, BestGood[0], BestGood[1],mainInstance.blockArray);
-                        BestPath = mainInstance.findPathAvoidingRobots(r.x, r.y, BestGood[0], BestGood[1], i);
+                        BestPath = AStar.findPath(r.x, r.y, BestGood[0], BestGood[1],mainInstance.blockArray);
+//                        BestPath = mainInstance.findPathAvoidingRobots(r.x, r.y, BestGood[0], BestGood[1], i);
                         if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
                             r.mvPath=BestPath;
                             r.status=1;
@@ -189,9 +188,9 @@ public class Main {
                         }
                     }
 
-                    if(BestGood==null||BestPath==null){//范围内都没有物品，让机器人随机游走
+                    if(BestGood==null||BestPath==null){//全图无货物，或者无路可走，让机器人休息一会。
                         //范围内都没有物品，让机器人随机游走
-                        System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
+//                        System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
                         r.status=0;
                     }
 
@@ -204,9 +203,8 @@ public class Main {
                             mainInstance.gds[r.x][r.y]=0;//将这个物品标记为消失
                             System.out.printf("get %d" + System.lineSeparator(), i);
                             r.status=2;
-                            //TODO:前往港口是否需要避障寻路？
-//                            r.mvPath= AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 2, mainInstance.berth[i].y + 2,mainInstance.blockArray);
-                            r.mvPath= mainInstance.findPathAvoidingRobots(r.x, r.y, mainInstance.berth[i].x + 2, mainInstance.berth[i].y + 2, i);
+
+                            r.mvPath= AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 2, mainInstance.berth[i].y + 2,mainInstance.blockArray);
 
                         } else {
                             //if good has been taken by other robot
@@ -292,7 +290,7 @@ public class Main {
                 Main.Robot otherRobot = robots[i];
                 int robotX = otherRobot.x;
                 int robotY = otherRobot.y;
-                // 假设你有方法来将机器人位置转换为blocksArray中的索引
+
 
                 //虚拟行走预演
                 for (int index=0;i<otherRobot.mvPath.size();index++) {//把别的机器人的可能路径也标记为障碍
