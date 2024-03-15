@@ -147,29 +147,38 @@ public class Main {
                     int range=100;
                     long MaxWeight=-1;//权重定义为货物价值/距离机器人的距离
                     LinkedList<Integer> BestPath=null;
+                    int[] BestGood=null;//TODO
                     //搜索range*2范围内的所有货物gds
                     for(int j=r.x-range;j<r.x+range;++j){
                         for(int k=r.y-range;k<r.y+range;++k){
                             if(j>=0 && j<goodsMap.length && k>=0 && k<goodsMap[0].length && goodsMap[j][k]!=0){//是货物
-                                LinkedList<Integer> path = AStar.findPath(r.x, r.y, j, k,mainInstance.blockArray);
-                                if(path.size()!=0 &&  (goodsMap[j][k]/path.size())>MaxWeight){//更新权重最大的物品
-                                    MaxWeight=goodsMap[j][k]/path.size();
-                                    BestPath=path;
+                                int[] Good = new int[]{j,k};//TODO
+                                int distance = Math.abs(r.x - Good[0]) + Math.abs(r.y - Good[1]);
+                                if(distance!=0  &&  (goodsMap[j][k]/distance)>MaxWeight){//更新权重最大的物品
+                                    MaxWeight=goodsMap[j][k]/distance;
+                                    BestGood=Good;//TODO
                                 }
                             }
                         }
 
                     }
-                    if(BestPath==null){
+                    if(BestGood!=null){//才能试图寻找BestPath
+                        BestPath = AStar.findPath(r.x, r.y, BestGood[0], BestGood[1],mainInstance.blockArray);
+                        if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
+                            r.mvPath=BestPath;
+                            r.status=1;
+                            System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+
+                        }
+                    }
+
+                    if(BestGood==null||BestPath==null){//范围内都没有物品，让机器人随机游走
                         //范围内都没有物品，让机器人随机游走
                         System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
                         r.status=0;
-                    }else {
-                        //有物品
-                        System.out.printf("move %d %d" + System.lineSeparator(), i, BestPath.poll());
-                        r.mvPath=BestPath;
-                        r.status=1;
                     }
+
+
                 }else if (r.status==1) {//机器人前往货物处
                     if(r.mvPath.size()>0){// still on the way
                         System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
