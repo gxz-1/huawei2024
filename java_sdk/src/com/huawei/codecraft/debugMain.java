@@ -8,10 +8,8 @@ package com.huawei.codecraft;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Main: the agents receiving environment input and sending actions of robots and ships
@@ -149,7 +147,8 @@ public class debugMain {
                 Robot r=mainInstance.robot[i];
                 assert r!=null:"robot is null";
                 if(r.status==-1){//异常状态:返回泊位点右下角位置
-                    LinkedList<Integer> mvPath = AStar.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3,mainInstance.blockArray);
+                    //TODO check
+                    LinkedList<Integer> mvPath = mainInstance.findPathAvoidingRobots(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3, i);
 //                    LinkedList<Integer> mvPath = ps.findPath(r.x, r.y, mainInstance.berth[i].x + 3, mainInstance.berth[i].y + 3);
                     if(mvPath.size()==0){//如果根本到不了泊位 或 迭代次数超时,则就地找货物机器人
                         r.status=0;
@@ -236,7 +235,50 @@ public class debugMain {
             System.out.flush();
         }
     }
+    //TODO: Implement a method to calculate the our path
+    public LinkedList<Integer> findPathAvoidingRobots(int startX, int startY, int endX, int endY, int currentRobotIndex) {
+        Robot[] robots = this.robot;
+        int[][] updatedBlocksArray = Arrays.copyOf(this.blockArray, blockArray.length);
+        for (int i = 0; i < updatedBlocksArray.length; i++) {
+            for (int j = 0; j < 2; j++) {
 
+            }
+        }
+
+        //mvPath 和 节点差值 转换字典
+        int[][] nodeMoveDict = new int[][]{{0, 1}, {0, -1}, {-1, 0}, {1, 0}};//TODO 检查方向是否正确
+
+        // 更新障碍物数组以包含其他机器人的位置作为临时障碍
+        List<int[]> blocksList = Arrays.stream(updatedBlocksArray).collect(Collectors.toList());
+        for (int i = 0; i < 10; i++) {
+            if (i != currentRobotIndex && robots[i].mvPath!=null) { // 排除当前计算路径的机器人 和没有mvPath的机器人
+                Robot otherRobot = robots[i];
+                int robotX = otherRobot.x;
+                int robotY = otherRobot.y;
+                // 假设你有方法来将机器人位置转换为blocksArray中的索引
+
+                //虚拟行走预演
+                for (int index=0;i<otherRobot.mvPath.size();index++) {//把别的机器人的可能路径也标记为障碍
+                    int moveCommand = otherRobot.mvPath.poll();
+                    int[] move = nodeMoveDict[moveCommand];
+                    robotX += move[0];
+                    robotY += move[1];
+                    int[] blockIndex = new int[]{robotX, robotY};
+                    blocksList.add(blockIndex);
+
+
+                }
+
+
+
+
+            }
+        }
+        updatedBlocksArray = blocksList.toArray(new int[0][]);
+
+        // 使用更新的障碍物数组计算路径
+        return AStar.findPath(startX, startY, endX, endY, updatedBlocksArray);
+    }
 
     /**
      * Entity: Robot
@@ -245,9 +287,12 @@ public class debugMain {
         int x, y, goods;
         int status; //-1异常状态 0 空闲 1前往物品中 2拿到物品前往泊位中
         int mbx, mby;
+        LinkedList<Integer> mvPath=null;//TODO check
+
 
         public Robot() {
             status=-1;
+            mvPath=null;
         }
 
         public Robot(int startX, int startY) {
@@ -256,7 +301,6 @@ public class debugMain {
             status=-1;
         }
 
-        LinkedList<Integer> mvPath;
     }
 
     /**
