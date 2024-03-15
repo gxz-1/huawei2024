@@ -141,7 +141,6 @@ public class Main {
                     {
                         //随机一个泊位编号
                         int berthId = random.nextInt(10);
-                        //TODO 测试避障寻路是否有用，是否能提高分数
                         r.mvPath=AStar.findPath(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2,mainInstance.blockArray);
 //                        r.mvPath= mainInstance.findPathAvoidingRobots(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2, i);
                         //如果能找到路径，则前往泊位，否则跳过此帧
@@ -189,9 +188,16 @@ public class Main {
                     }
 
                     if(BestGood==null||BestPath==null){//全图无货物，或者无路可走，让机器人休息一会。
-                        //范围内都没有物品，让机器人随机游走
-//                        System.out.printf("move %d %d" + System.lineSeparator(), i,random.nextInt(4)%4);
-                        r.status=0;
+                        //随机一个泊位编号
+                        int berthId = random.nextInt(10);
+                        r.mvPath=AStar.findPath(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2,mainInstance.blockArray);
+//                        r.mvPath= mainInstance.findPathAvoidingRobots(r.x, r.y, mainInstance.berth[berthId].x + 2, mainInstance.berth[berthId].y + 2, i);
+                        //如果能找到路径，则前往泊位，否则跳过此帧
+                        if(r.mvPath.size()>0){
+                            r.status=2;
+                        }else {
+                            r.status=-1;
+                        }
                     }
 
 
