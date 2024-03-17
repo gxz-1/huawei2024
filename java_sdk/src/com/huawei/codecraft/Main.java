@@ -178,8 +178,6 @@ public class Main {
         }
     }
 
-
-
     private void boatMove(int i){
         Boat boat=boats[i];
         if (zhen_id ==1){//第一帧,每一艘船都在虚拟点，前往泊位
