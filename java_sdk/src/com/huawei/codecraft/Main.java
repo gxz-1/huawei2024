@@ -32,7 +32,7 @@ public class Main {
 
 
     private int[][] blockArray;
-    private static final int goodsList_capacity = 30;//物品数组的最大容量
+    private static final int goodsList_capacity = 32;//物品数组的最大容量
     private CircularBuffer goodsList;
     private Random random;
     /**
@@ -81,6 +81,7 @@ public class Main {
             boats[i].boat_id = i;
             boats[i].flag=0;
             boats[i].loadedGoods=0;
+            boats[i].wait_zhen=15000;
         }
     }
 
@@ -187,25 +188,11 @@ public class Main {
             //不执行操作
         }else if(boat.status==1){ //非第一帧，船处于等待指令状态
             if(boat.pos!=-1){//船只已经到达泊位
-                berth[boat.pos].ship=true;//泊位占用信号
-                //每一帧试图装货
-                //装货量=最小值(船仓余量，泊位货物数量，装货速度)
-                int boatAllowance = boat_capacity - boat.loadedGoods;
-                int loadingGoods = Math.min(boatAllowance, Math.min( berth[boat.pos].goods_num, berth[boat.pos].loading_speed));
-                boat.loadedGoods+=loadingGoods;
-                berth[boat.pos].goods_num-=boat.loadedGoods;
-
-                //装完后发现装满了或者没货物了，就离开
-                if (boat.loadedGoods >= boat_capacity || berth[boat.pos].goods_num<=0){
-                    System.out.printf("go %d" + System.lineSeparator(), i);
-                    boat.flag=(boat.flag==1)?0:1;
-                    berth[boat.pos].ship=false;
-                }
+//                boat.loadGoods0();
+                boat.loadGoods1();
             } else {//船只已经到达虚拟点
-                //卸下货物
-                boat.loadedGoods=0;
-                //返航
-                System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);
+                boat.loadedGoods=0;//卸下货物
+                System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);//返航
             }
 
         }
@@ -413,6 +400,37 @@ public class Main {
         int status;
         int loadedGoods;
         int flag;
+        double wait_zhen;
+
+        public void loadGoods0(){
+                berth[pos].ship=true;//泊位占用信号
+                //每一帧试图装货:装货量=最小值(船仓余量，泊位货物数量，装货速度)
+                int boatAllowance = boat_capacity - loadedGoods;
+                int loadingGoods = Math.min(boatAllowance, Math.min( berth[pos].goods_num, berth[pos].loading_speed));
+                loadedGoods+=loadingGoods;
+                berth[pos].goods_num-=loadedGoods;
+                //装完后发现装满了或者没货物了，就离开
+                if (loadedGoods >= boat_capacity || berth[pos].goods_num<=0){
+                    System.out.printf("go %d" + System.lineSeparator(), boat_id);
+                    flag^=1;
+                    berth[pos].ship=false;
+                }
+        }
+
+        public void loadGoods1(){
+            if(wait_zhen==15000){//约定wait_zhen==15000为开始装货物的信号
+                berth[pos].ship=true;//泊位占用信号
+                //预估装货时间
+                float MaxLoadNum=Math.min(berth[pos].goods_num,boat_capacity);//最大可装载量
+                wait_zhen = zhen_id+Math.ceil(MaxLoadNum/berth[pos].loading_speed);
+            }
+            if(wait_zhen<zhen_id){//该运货了
+                System.out.printf("go %d" + System.lineSeparator(), boat_id);
+                flag^=1;
+                berth[pos].ship=false;
+                wait_zhen=15000;//到下次可以装货的时候执行上面的代码
+            }
+        }
     }
 
 }
