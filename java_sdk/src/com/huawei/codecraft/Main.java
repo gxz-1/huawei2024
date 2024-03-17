@@ -238,7 +238,7 @@ public class Main {
              -----------------船只操作-----------------
              */
             for (int i=0;i<5;++i){
-                Main.Boat boat=mainInstance.boat[i];//每一帧每艘船有一套相同的操作逻辑
+                Boat boat=mainInstance.boat[i];//每一帧每艘船有一套相同的操作逻辑
                 if (id==1){//第一帧,每一艘船都在虚拟点，前往泊位
                     System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
                 }else if(boat.status==0 || boat.status==2){//非第一帧，船处于0:船移动中 2:泊位外等待
@@ -285,7 +285,7 @@ public class Main {
      * 机器人避障寻路(mainstance 的实例方法)
      */
     public LinkedList<Integer> findPathAvoidingRobots(int startX, int startY, int endX, int endY, int currentRobotIndex) {
-        Main.Robot[] robots = this.robot;
+        Robot[] robots = this.robot;
         int[][] updatedBlocksArray = Arrays.copyOf(this.blockArray, blockArray.length);
         for (int i = 0; i < updatedBlocksArray.length; i++) {
             for (int j = 0; j < 2; j++) {
@@ -300,7 +300,7 @@ public class Main {
         List<int[]> blocksList = Arrays.stream(updatedBlocksArray).collect(Collectors.toList());
         for (int i = 0; i < 10; i++) {
             if (i != currentRobotIndex && robots[i].mvPath!=null) { // 排除当前计算路径的机器人 和没有mvPath的机器人
-                Main.Robot otherRobot = robots[i];
+                Robot otherRobot = robots[i];
                 int robotX = otherRobot.x;
                 int robotY = otherRobot.y;
 
