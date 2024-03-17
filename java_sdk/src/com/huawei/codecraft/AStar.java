@@ -81,33 +81,22 @@ public class AStar {
         AStar aStar = new AStar(200, 200, startNode, finalNode,DEFAULT_HV_COST,10000);
         aStar.setBlocks(blocksArray);
         List<Node> path = aStar.findPath();//将node列表path转换为移动方向指令列表result
-        Object[] array = path.toArray();
-        for (int i = 0; i < (array.length-1); i++) {
-            Node currentNode = (Node)array[i];
-            Node nextNode = (Node)array[i+1];
+        for (int i = 0; i < path.size()-1; i++) {
+            Node currentNode = path.get(i);
+            Node nextNode = path.get(i+1);
             int rowMove = nextNode.getRow()-currentNode.getRow();
             int colMove = nextNode.getCol()-currentNode.getCol();
-            int[] nodeMove = new int[]{rowMove, colMove};
-            switch (Arrays.toString(nodeMove)){
-                case "[0, 1]"://y加1，应该右移
-                    result.add(0);
-                    break;
-                case "[0, -1]"://y-1，应该左移
-                    result.add(1);
-                    break;
-                case "[1, 0]"://x加1，应该下移
-                    result.add(3);
-                    break;
-                case "[-1, 0]"://x-1，应该上移
-                    result.add(2);
-                    break;
-                default:
-                    break;
+            if(rowMove==0 && colMove==1){
+                result.add(0);//右移
+            }else if(rowMove==0 && colMove==-1){
+                result.add(1);//左移
+            }else if(rowMove==1 && colMove==0){
+                result.add(3);//下移
+            }else {
+                result.add(2);//上移
             }
         }
         return result;
-
-
     }
 
     private List<Node> getPath(Node currentNode) {
