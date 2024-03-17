@@ -150,8 +150,10 @@ public class Main {
     private void robotMove(int i){
         Robot r= robots[i];
         if(r.status==-1){//碰撞状态
-            r.afterCollision();
+            r.afterCollision0();
+//            r.afterCollision1();
         }else if(r.status==0){//空闲状态
+//            r.searchGds0();
             r.searchGds1();
         }
 
@@ -162,11 +164,12 @@ public class Main {
                 if (gds[r.x][r.y] != 0) {//货物仍在，就取货
                     gds[r.x][r.y]=0;//将这个物品标记为消失
                     System.out.printf("get %d" + System.lineSeparator(), i);
-                    r.searchBerth();
+//                    r.searchBerth0();
+                    r.searchBerth1(berth);
                 } else {
                     r.status=0;//if good has been taken by other robot
                 }
-            }else if(r.status==2) {
+            }else if(r.status==2) {//到达泊位处
                 System.out.printf("pull %d" + System.lineSeparator(), i);
                 berth[i].goods_num+=r.goods;//机器人对应的泊位货物数量+1
                 r.status=0;
@@ -264,14 +267,26 @@ public class Main {
         int status; //-1异常状态 0 空闲 1前往物品中 2拿到物品前往泊位中
         LinkedList<Integer> mvPath;
 
-        public void afterCollision(){
-
+        //原本的写法
+        public void afterCollision0(){
             if(goods==0){
                 status=0;
             }else{//机器人携带货物，则重新随机寻路一个泊位
                 //随机一个泊位编号
                 int berthId = random.nextInt(10);
                 mvPath=AStar.findPath(x, y, berth[berthId].x + 2, berth[berthId].y + 2,blockArray);
+                //如果能找到路径，则前往泊位，否则跳过此帧
+                if(mvPath.size()>0){
+                    status=2;
+                }
+            }
+        }
+
+        public void afterCollision1(){
+            if(goods==0){
+                status=0;
+            }else{//机器人携带货物，则寻找最近的泊位
+                searchBerth1(berth);
                 //如果能找到路径，则前往泊位，否则跳过此帧
                 if(mvPath.size()>0){
                     status=2;
@@ -328,6 +343,9 @@ public class Main {
             //搜索goodsList中最佳的货物
             for(int i=0;i<goodsList.size();++i){
                 Agood temp_goods=goodsList.get(i);
+                if(gds[temp_goods.x][temp_goods.y]<=0){//货物不存在或已被其他机器人锁定,则跳过
+                    continue;
+                }
                 int distance = Math.abs(x - temp_goods.x) + Math.abs(y - temp_goods.y);
                 if(distance!=0  &&  (temp_goods.val/distance)>MaxWeight){//更新权重最大的物品
                     MaxWeight=temp_goods.val/distance;
@@ -350,11 +368,26 @@ public class Main {
         }
 
 
-        public void searchBerth(){
+        public void searchBerth0(){
             status=2;
             mvPath= AStar.findPath(x, y, berth[robot_id].x + 2, berth[robot_id].y + 2,blockArray);
         }
 
+        public void searchBerth1(Berth[] berths){//曼哈顿距离找最近的泊位
+            status=2;
+            int MinDistance=10000;
+            Berth MinBerth=null;
+            for(int i=0;i<berth_num;++i){
+                int distance = Math.abs(x - berths[i].x) + Math.abs(y - berths[i].y);
+                if(distance<MinDistance){
+                    MinDistance=distance;
+                    MinBerth=berths[i];
+                }
+            }
+            if (MinBerth != null) {
+                mvPath= AStar.findPath(x, y, MinBerth.x, MinBerth.y,blockArray);
+            }
+        }
     }
 
     /**
