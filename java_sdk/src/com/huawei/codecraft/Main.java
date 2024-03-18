@@ -75,7 +75,9 @@ public class Main {
             robots[i]=new Robot();
             robots[i].robot_id = i;
             robots[i].status=0;
+            robots[i].sts=0;
         }
+
         for(int i = 0; i < 5; i ++) {//船舶初始化
             boats[i]=new Boat();
             boats[i].boat_id = i;
@@ -104,8 +106,8 @@ public class Main {
             robots[i].goods = scanf.nextInt();//0 表示未携带物品 1 表示携带物品
             robots[i].x = scanf.nextInt();//机器人的坐标
             robots[i].y = scanf.nextInt();
-            int sts = scanf.nextInt();//0 表示恢复状态 1 表示正常运行状态
-            if(sts==0){
+            robots[i].sts = scanf.nextInt();//0 表示恢复状态 1 表示正常运行状态
+            if(robots[i].sts==0){
                 robots[i].status=-1;//异常
             }
         }
@@ -158,6 +160,13 @@ public class Main {
             r.searchGds1();
         }
 
+        //若机器人的坐标索引到的ch数组的元素为'B',说明机器人到了泊位，输出"pull"指令
+        if (ch[r.x].charAt(r.y) == 'B') {
+            System.out.printf("pull %d" + System.lineSeparator(), i);
+            berth[i].goods_num+=r.goods;//机器人对应的泊位货物数量+1
+            r.status=0;
+        }
+
         if (r.mvPath!=null && r.mvPath.size()>0) {//有移动的路径则移动
                 System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
         }else {
@@ -170,7 +179,7 @@ public class Main {
                 } else {
                     r.status=0;//if good has been taken by other robot
                 }
-            }else if(r.status==2) {//到达泊位处
+            }else if(r.status==2) {//到达泊位中心
                 System.out.printf("pull %d" + System.lineSeparator(), i);
                 berth[i].goods_num+=r.goods;//机器人对应的泊位货物数量+1
                 r.status=0;
@@ -195,11 +204,12 @@ public class Main {
 
         }
     }
+
     /**
      * 机器人避障寻路(mainstance 的实例方法)
      */
     public LinkedList<Integer> findPathAvoidingRobots(int startX, int startY, int endX, int endY, int currentRobotIndex) {
-        Robot[] robots = this.robots;
+
         int[][] updatedBlocksArray = Arrays.copyOf(blockArray, blockArray.length);
         for (int i = 0; i < updatedBlocksArray.length; i++) {
             for (int j = 0; j < 2; j++) {
@@ -242,7 +252,6 @@ public class Main {
         return AStar.findPath(startX, startY, endX, endY, updatedBlocksArray);
     }
 
-
     /**
      * Entity: Robot
      */
@@ -250,10 +259,21 @@ public class Main {
         int robot_id;
         int x, y, goods;
         int status; //-1异常状态 0 空闲 1前往物品中 2拿到物品前往泊位中
+        int sts;
         LinkedList<Integer> mvPath;
 
-        //原本的写法
+
+
+
+        //碰撞后处理只用改这里
+
+        /**
+         * 随机泊位
+         */
         public void afterCollision0(){
+            if(sts==0){
+                return;
+            }
             if(goods==0){
                 status=0;
             }else{//机器人携带货物，则重新随机寻路一个泊位
@@ -277,6 +297,13 @@ public class Main {
                     status=2;
                 }
             }
+        }
+
+        /**
+         * 回退随机步数
+         */
+        public void  afterCollision2(){
+
         }
 
         //原本的写法
