@@ -559,6 +559,7 @@ public class Main {
                 if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
                     //机器人已锁定此货物，别的机器人不能再取
                     gds[destinationX][destinationY]=-1;
+                    val=BestGood.val;
                     mvPath=BestPath;
                     status=1;
                 }
