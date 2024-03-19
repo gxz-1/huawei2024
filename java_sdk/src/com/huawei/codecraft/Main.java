@@ -7,6 +7,7 @@ package com.huawei.codecraft;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class Main {
 
 
     private int[][] blockArray;
-    private static final int goodsList_capacity = 32;//物品数组的最大容量
+    private static final int goodsList_capacity = 30;//物品数组的最大容量
     private CircularBuffer goodsList;
     private Random random;
     /**
@@ -288,6 +289,9 @@ public class Main {
         }
 
         public void afterCollision1(){
+            if(sts==0){
+                return;
+            }
             if(goods==0){
                 status=0;
             }else{//机器人携带货物，则寻找最近的泊位
@@ -369,6 +373,7 @@ public class Main {
                 BestPath = AStar.findPath(x, y, BestGood.x, BestGood.y,blockArray);
                 if(BestPath.size() == 0 && NextBestGood != null){//TODO 找次好的货物
                     BestPath = AStar.findPath(x, y, NextBestGood.x, NextBestGood.y,blockArray);
+                    BestGood=NextBestGood;
                 }
                 if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
                     //机器人已锁定此货物，别的机器人不能再取
@@ -454,6 +459,24 @@ public class Main {
                 flag^=1;
                 berth[pos].ship=false;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
+
+//                // 输出文件的路径
+//                String filePath = "out/boatlog.txt";
+//                // 要写入文件的内容
+//                String content =String.format("泊位号：%d 泊位装载速度：%d 泊位剩余物品数量：%d 泊位剩余价值：%d ");
+//
+//                try (FileOutputStream fos = new FileOutputStream(filePath)) {
+//                    // 将字符串转换为字节数组
+//                    byte[] bytesArray = content.getBytes();
+//
+//                    // 写入内容到文件
+//                    fos.write(bytesArray);
+//                    fos.flush();
+//                    System.out.println("内容已成功写入文件");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+
             }
         }
     }
