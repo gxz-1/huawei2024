@@ -350,6 +350,7 @@ public class Main {
                     //k/3 =0,0,0,1,1,1,2,2,2
                     //k%3 =0,1,2,0,1,2,0,1,2
                 }
+
             }
         }
         robots[i].mvPath = AStar.findPath(robots[i].x, robots[i].y, endX, endY, updatedBlocksArray);
