@@ -37,7 +37,7 @@ public class Main {
 
     private  int[][] robotAdjacency = new int[robot_num][robot_num];//第0行表示机器人0和1、2、3、4、5、6、7、8、9是否相邻
     //第1行表示机器人1和2、3、4、5、6、7、8、9是否相邻，也就是说只有右上方的三角矩阵是有意义的，只记录机器人i和之后的机器人是否相邻
-    private static final int goodsList_capacity = 32;//物品数组的最大容量
+    private static final int goodsList_capacity =40;//物品数组的最大容量
     private CircularBuffer goodsList;
     private Random random;
     /**
@@ -116,8 +116,30 @@ public class Main {
             robots[i].x = scanf.nextInt();//机器人的坐标
             robots[i].y = scanf.nextInt();
             robots[i].sts = scanf.nextInt();//0 表示恢复状态 1 表示正常运行状态
-            if(robots[i].sts==0){
-                robots[i].status=-1;//异常
+            if(robots[i].sts==0){//如果发生碰撞，需要冻结状态并等待
+
+                if (robots[i].waitTime==-1){
+                    robots[i].FronzenStatus = robots[i].status;
+                    robots[i].status=-1;
+                    robots[i].waitTime = 20+random.nextInt( + 5);
+                }
+                if(robots[i].waitTime>0) {
+                robots[i].waitTime--;}
+                if (robots[i].waitTime==0){
+                    robots[i].status = robots[i].FronzenStatus;
+                    robots[i].waitTime=-1;
+                }
+
+            } else if (robots[i].sts==1) {
+                //如果有冻结的状态，就解冻，如果没有，就不管
+
+                if (robots[i].FronzenStatus!=-7){
+                    robots[i].status = robots[i].FronzenStatus;
+                    robots[i].waitTime=-1;
+                    robots[i].FronzenStatus=-7;
+                    findPathBypassRobots(i,robots[i].destinationX,robots[i].destinationY);
+
+                }
             }
         }
         this.robotAdjacency=getRobotAdjacency();
@@ -136,7 +158,7 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-//        test();//TODO : 测试新建方法
+//        test();//TODO : 测试用新建方法
 
         Main mainInstance = new Main();
         Scanner scanf = new Scanner(System.in);
@@ -174,6 +196,7 @@ public class Main {
 
 
             //与判题器交互
+
             for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
                 int zhen_id = mainInstance.input(scanf);
 
@@ -186,10 +209,10 @@ public class Main {
 
 //                mainInstance.getRobotAdjacency();
 
-                mainInstance.robots[0].status=1;
+//                mainInstance.robots[0].status=1;
                 for(int i = 0; i < robot_num; i ++){
-                    mainInstance.robots[i].wait(10);
-//                    mainInstance.robotMove(i);
+//                    mainInstance.robots[i].wait(10);
+                    mainInstance.robotMove(i);
                 }
                 for (int i=0;i<5;++i){
                     //每一帧每艘船有一套相同的操作逻辑
@@ -225,33 +248,40 @@ public class Main {
         goFirst(i);//i 大叫，我要先走了,相邻的先等一等
 
 
-        if(r.status==-1){//碰撞状态
+        if(r.status==-1){//碰撞状态:这部分处理放在input中了。
 //            r.afterCollision0();
-            r.afterCollision2();
+//            r.afterCollision2();
 //            r.afterCollision1();
 
         }else if(r.status==0){//空闲状态
 //            r.searchGds0();
             r.searchGds1();
 //            r.searchGds2();
+            if(r.mvPath!=null && !r.mvPath.isEmpty()) System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+
+
         }else if(r.status==-2){//避让状态
-            r.wait(10);//随机等待1~10帧，或保持等待
+            r.wait(3);//随机等待1~10帧，或保持等待
             return;
         }
-
-
-        //若机器人的坐标索引到的ch数组的元素为'B',说明机器人到了泊位，输出"pull"指令
-        if (ch[r.x].charAt(r.y) == 'B') {
-            if(r.goods==1) {
+        //若机器人正在前往泊位的路上
+        else if (r.status==2 && r.goods==1) {
+            if( ch[r.x].charAt(r.y) == 'B') { //到达泊位
                 System.out.printf("pull %d" + System.lineSeparator(), i);
                 berth[i].goods_num += r.goods;//机器人对应的泊位货物数量+1
                 r.status = 0;
+            }else {//还在路上
+                System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+                //r.mvPath!=null && r.mvPath.size()>0
             }
 
-        }else if (r.mvPath!=null && r.mvPath.size()>0) {//有移动的路径则移动
-            System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
-        }else {
-            if(r.status==1) {//到达货物处
+        }else if(r.status==1){//前往货物的路上
+
+
+            if (r.mvPath!=null && !r.mvPath.isEmpty()) {//还在路上
+                System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+
+            } else { //到达货物？
                 if (gds[r.x][r.y] != 0) {//货物仍在，就取货
                     gds[r.x][r.y]=0;//将这个物品标记为消失
                     System.out.printf("get %d" + System.lineSeparator(), i);
@@ -260,11 +290,8 @@ public class Main {
                 } else {
                     r.status=0;//if good has been taken by other robot
                 }
-            }else if(r.status==2) {//到达泊位中心
-                System.out.printf("pull %d" + System.lineSeparator(), i);
-                berth[i].goods_num+=r.goods;//机器人对应的泊位货物数量+1
-                r.status=0;
             }
+
         }
     }
 
@@ -276,7 +303,7 @@ public class Main {
         int hasNeighbor=0;
         for (int j = i + 1; j < robot_num; ++j) {//邻居避让
             if(robotAdjacency[i][j]==1){
-                robots[j].wait(10);//避让状态
+                robots[j].wait(3);//短避让状态
                 hasNeighbor=1;
             }
         }
@@ -360,7 +387,7 @@ public class Main {
 
         int waitTime=-1;
 
-        int FronzenStatus;
+        int FronzenStatus = -7;
         LinkedList<Integer> mvPath;
 
         Main mainInstance  ;
@@ -376,7 +403,7 @@ public class Main {
 
                 if(this.waitTime==-1) {//开始等待,冻结状态
                     this.FronzenStatus = this.status;
-                    this.status=-1;
+                    this.status=-2;//避让状态
                     this.waitTime = random.nextInt(1 + waitTimeRange);
                     this.waitTime--;
 
@@ -384,6 +411,7 @@ public class Main {
                     this.waitTime--;
                 }else if(this.waitTime==0){
                     this.status = this.FronzenStatus;
+                    this.FronzenStatus=-7;
                     this.waitTime=-1;
                 }
 
@@ -431,7 +459,8 @@ public class Main {
         public void  afterCollision2(){
             if(this.status==-1||this.sts==0){//确认碰撞了
                 //等待一个随机时间(20+1~10)，然后继续之前的行为
-                this.wait(10);//先等一等，没好就再等一等
+                this.wait(5);//先等一等，没好就再等一等
+
 
             }
 
