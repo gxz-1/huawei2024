@@ -370,7 +370,7 @@ public class Main {
 //                boat.loadGoods0();
                 boat.loadGoods1();
             } else {//船只已经到达虚拟点
-//                boat.loadedGoods=0;//卸下货物
+                boat.loadedGoods=0;//卸下货物
                 System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);//返航
             }
 
@@ -385,8 +385,9 @@ public class Main {
         }else if(boat.status==1){ //非第一帧，船处于等待指令状态
             if(boat.pos==-1){//船只已经到达虚拟点
                 System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);//返航
+                boat.loadedGoods=0;
             } else {//船只已经到达泊位
-                boat.loadGoods2();
+                boat.loadGoods3();
             }
         }
     }
@@ -760,31 +761,8 @@ public class Main {
                 System.out.printf("go %d" + System.lineSeparator(), boat_id);
                 flag^=1;
                 berth[pos].ship=false;
+                loadedGoods=0;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
-
-//                if(logOn){
-//                    // 要写入文件的内容
-//                    String content=zhen_id+"\n";
-//                    content +=String.format("berthid：%d loadspeed：%d 剩余货物数量：%d 累积货物价值：%d \n",
-//                            pos,berth[pos].loading_speed,berth[pos].goods_num,berth[pos].goods_value);
-//                    content +=String.format("boatid：%d transport_time：%d boat_capacity：%d \n",
-//                            boat_id,berth[pos].loading_speed,boat_capacity);
-//                    int sumnum = 0,sumval = 0;
-//                    for(int i=0;i<berth_num;++i){
-//                        sumnum+=berth[i].goods_num;
-//                        sumval+=berth[i].goods_value;
-//                    }
-//                    content+="总计剩余货物:"+sumnum+" 总计价值:"+sumval+"\n";
-//                    try{
-//                        // 将字符串转换为字节数组
-//                        byte[] bytesArray = content.getBytes();
-//                        // 写入内容到文件
-//                        fos.write(bytesArray);
-//                        fos.flush();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
 
             }
         }
@@ -796,6 +774,7 @@ public class Main {
                 float MaxLoadNum=Math.min(berth[pos].goods_num,boat_capacity);//最大可装载量
                 wait_zhen = zhen_id+Math.ceil(MaxLoadNum/berth[pos].loading_speed);
                 berth[pos].goods_num-=MaxLoadNum;
+                loadedGoods+= (int) MaxLoadNum;
             }
             if(wait_zhen<zhen_id){//该运货了
                 if(flag==0){
@@ -804,34 +783,61 @@ public class Main {
                 }else{
                     flag^=1;
                     System.out.printf("go %d" + System.lineSeparator(), boat_id);
+
+//                    if(logOn){
+//                        // 要写入文件的内容
+//                        String content=zhen_id+"\n";
+//                        content +=String.format("berthid：%d loadspeed：%d 剩余货物数量：%d 累积货物价值：%d \n",
+//                                pos,berth[pos].loading_speed,berth[pos].goods_num,berth[pos].goods_value);
+//                        content +=String.format("boatid：%d transport_time：%d boat_capacity：%d 运输量 %d\n",
+//                                boat_id,berth[pos].transport_time,boat_capacity,loadedGoods);
+//                        int sumnum = 0,sumval = 0;
+//                        for(int i=0;i<berth_num;++i){
+//                            sumnum+=berth[i].goods_num;
+//                            sumval+=berth[i].goods_value;
+//                        }
+//                        content+="总计剩余货物:"+sumnum+" 总计价值:"+sumval+"\n";
+//                        try{
+//                            // 将字符串转换为字节数组
+//                            byte[] bytesArray = content.getBytes();
+//                            // 写入内容到文件
+//                            fos.write(bytesArray);
+//                            fos.flush();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+
                 }
                 berth[pos].ship=false;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
 
-//                if(logOn){
-//                    // 要写入文件的内容
-//                    String content=zhen_id+"\n";
-//                    content +=String.format("berthid：%d loadspeed：%d 剩余货物数量：%d 累积货物价值：%d \n",
-//                            pos,berth[pos].loading_speed,berth[pos].goods_num,berth[pos].goods_value);
-//                    content +=String.format("boatid：%d transport_time：%d boat_capacity：%d \n",
-//                            boat_id,berth[pos].loading_speed,boat_capacity);
-//                    int sumnum = 0,sumval = 0;
-//                    for(int i=0;i<berth_num;++i){
-//                        sumnum+=berth[i].goods_num;
-//                        sumval+=berth[i].goods_value;
-//                    }
-//                    content+="总计剩余货物:"+sumnum+" 总计价值:"+sumval+"\n";
-//                    try{
-//                        // 将字符串转换为字节数组
-//                        byte[] bytesArray = content.getBytes();
-//                        // 写入内容到文件
-//                        fos.write(bytesArray);
-//                        fos.flush();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
+            }
+        }
 
+        public void loadGoods3(){
+            if( wait_zhen>13000 && wait_zhen!=15000){//运到虚拟点需要最多1000帧，13000保证最后运一趟
+                System.out.printf("go %d" + System.lineSeparator(), boat_id);
+                flag^=1;
+                return;
+            }
+            if(wait_zhen==15000){//约定wait_zhen==15000为开始装货物的信号
+                berth[pos].ship=true;//泊位占用信号
+                //预估装货时间
+                float MaxLoadNum=Math.min(berth[pos].goods_num,boat_capacity);//最大可装载量
+                wait_zhen = zhen_id+Math.ceil(MaxLoadNum/berth[pos].loading_speed);
+                berth[pos].goods_num-=MaxLoadNum;
+                loadedGoods+= (int) MaxLoadNum;
+            }
+            if( wait_zhen<zhen_id){//该运货了
+                if(loadedGoods>=boat_capacity){ //容量满了就运
+                    System.out.printf("go %d" + System.lineSeparator(), boat_id);
+                }else {
+                    flag^=1;
+                    System.out.printf("ship %d %d" + System.lineSeparator(), boat_id,boat_id*2+flag);
+                }
+                berth[pos].ship=false;
+                wait_zhen=15000;//到下次可以装货的时候执行上面的代码
             }
         }
     }
