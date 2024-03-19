@@ -23,6 +23,7 @@ public class Main {
     private static final int robot_num = 10;
     private static final int berth_num = 10;
     private static final int N = 210;
+    private static final boolean logOn=true;//是否开启船装载日志
 
     private int money, boat_capacity, zhen_id;
     private String[] ch = new String[N];
@@ -64,10 +65,12 @@ public class Main {
         System.out.println("OK");
         System.out.flush();
         //2.自定义信息
-        try {//TODO 船的日志信息
-            fos = new FileOutputStream("out/boatlog.txt");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        if(logOn){
+            try {//TODO 船的日志信息
+                fos = new FileOutputStream("out/boatlog.txt");
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
         random = new Random();
         goodsList=new CircularBuffer(goodsList_capacity);
@@ -158,21 +161,7 @@ public class Main {
             System.out.println("OK");
             System.out.flush();
         }
-        int sumnum = 0,sumval = 0;
-        for(int i=0;i<berth_num;++i){
-            sumnum+=mainInstance.berth[i].goods_num;
-            sumval+=mainInstance.berth[i].goods_value;
-        }
-        try{
-            String content="总计剩余货物:"+sumnum+" 总计价值:"+sumval;
-            // 将字符串转换为字节数组
-            byte[] bytesArray = content.getBytes();
-            // 写入内容到文件
-            mainInstance.fos.write(bytesArray);
-            mainInstance.fos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     private void robotMove(int i){
@@ -484,21 +473,30 @@ public class Main {
                 berth[pos].ship=false;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
 
-                // 要写入文件的内容
-                String content=zhen_id+"\n";
-                content +=String.format("berthid：%d loadspeed：%d 剩余货物数量：%d 累积货物价值：%d \n",
-                        pos,berth[pos].loading_speed,berth[pos].goods_num,berth[pos].goods_value);
-                content +=String.format("boatid：%d transport_time：%d boat_capacity：%d \n",
-                        boat_id,berth[pos].loading_speed,boat_capacity);
-                try{
-                    // 将字符串转换为字节数组
-                    byte[] bytesArray = content.getBytes();
-                    // 写入内容到文件
-                    fos.write(bytesArray);
-                    fos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(logOn){
+                    // 要写入文件的内容
+                    String content=zhen_id+"\n";
+                    content +=String.format("berthid：%d loadspeed：%d 剩余货物数量：%d 累积货物价值：%d \n",
+                            pos,berth[pos].loading_speed,berth[pos].goods_num,berth[pos].goods_value);
+                    content +=String.format("boatid：%d transport_time：%d boat_capacity：%d \n",
+                            boat_id,berth[pos].loading_speed,boat_capacity);
+                    int sumnum = 0,sumval = 0;
+                    for(int i=0;i<berth_num;++i){
+                        sumnum+=berth[i].goods_num;
+                        sumval+=berth[i].goods_value;
+                    }
+                    content+="总计剩余货物:"+sumnum+" 总计价值:"+sumval+"\n";
+                    try{
+                        // 将字符串转换为字节数组
+                        byte[] bytesArray = content.getBytes();
+                        // 写入内容到文件
+                        fos.write(bytesArray);
+                        fos.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+
             }
         }
     }
