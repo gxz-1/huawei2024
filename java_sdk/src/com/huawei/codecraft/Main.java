@@ -7,6 +7,8 @@ package com.huawei.codecraft;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,7 @@ public class Main {
     private static final int robot_num = 10;
     private static final int berth_num = 10;
     private static final int N = 210;
+    private static final boolean logOn=true;//是否开启船装载日志
 
     private int money, boat_capacity, zhen_id;
     private String[] ch = new String[N];
@@ -37,9 +40,10 @@ public class Main {
 
     private  int[][] robotAdjacency = new int[robot_num][robot_num];//第0行表示机器人0和1、2、3、4、5、6、7、8、9是否相邻
     //第1行表示机器人1和2、3、4、5、6、7、8、9是否相邻，也就是说只有右上方的三角矩阵是有意义的，只记录机器人i和之后的机器人是否相邻
-    private static final int goodsList_capacity =40;//物品数组的最大容量
+    private static final int goodsList_capacity =32;//物品数组的最大容量
     private CircularBuffer goodsList;
     private Random random;
+    private FileOutputStream fos;
     /**
      *Main(agents) load the map data from pipe of System.in , within 5s
      */
@@ -59,6 +63,7 @@ public class Main {
             berth[id].berth_id =id;
             berth[id].ship=false;
             berth[id].goods_num=0;
+            berth[id].goods_value=0;
         }
         boat_capacity = scanf.nextInt();//船的容积
         scanf.nextLine();//整数后要吸取换行符
@@ -68,6 +73,13 @@ public class Main {
         System.out.flush();
 
         //2.自定义信息
+        if(logOn){
+            try {//TODO 船的日志信息
+                fos = new FileOutputStream("out/boatlog.txt");
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
         random = new Random();
         goodsList=new CircularBuffer(goodsList_capacity);
         ArrayList<int[]> blockList = new ArrayList<>(); //获取地图上的障碍物信息
@@ -84,6 +96,7 @@ public class Main {
             robots[i].robot_id = i;
             robots[i].status=0;
             robots[i].sts=0;
+            robots[i].goods=0;
         }
 
 
@@ -271,6 +284,7 @@ public class Main {
             if( ch[r.x+1].charAt(r.y) == 'B') { //到达泊位
                 System.out.printf("pull %d" + System.lineSeparator(), i);
                 berth[i].goods_num += r.goods;//机器人对应的泊位货物数量+1
+                berth[i].goods_value+=r.val;
                 r.status = 0;
             }else {//还在路上
                 System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
@@ -278,8 +292,6 @@ public class Main {
             }
 
         }else if(r.status==1){//前往货物的路上
-
-
             if (r.mvPath!=null && !r.mvPath.isEmpty()) {//还在路上
                 System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
 
@@ -393,7 +405,7 @@ public class Main {
      */
     class Robot {
         int robot_id;
-        int x, y, goods;
+        int x, y, goods,val;
         int status; //-2避让状态 -1异常状态 0 空闲 1前往物品中 2拿到物品前往泊位中
         int sts;
 
@@ -402,7 +414,6 @@ public class Main {
         int FronzenStatus = -7;
         LinkedList<Integer> mvPath;
 
-        Main mainInstance  ;
         private int destinationX =-1;
         private int destinationY = -1;
 
@@ -426,8 +437,6 @@ public class Main {
                     this.FronzenStatus=-7;
                     this.waitTime=-1;
                 }
-
-
 
         }
 
@@ -550,6 +559,7 @@ public class Main {
                 if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
                     //机器人已锁定此货物，别的机器人不能再取
                     gds[destinationX][destinationY]=-1;
+                    val=BestGood.val;
                     mvPath=BestPath;
                     status=1;
                 }
@@ -582,9 +592,11 @@ public class Main {
                 BestPath = findPathAvoidingRobots(x, y, BestGood.x, BestGood.y, robot_id, blockArray,robots);
                 if(BestPath.size() == 0 && NextBestGood != null){//TODO 找次好的货物
                     BestPath = AStar.findPath(x, y, NextBestGood.x, NextBestGood.y,blockArray);
+                    BestGood=NextBestGood;
                 }
                 if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
                     //机器人已锁定此货物，别的机器人不能再取
+                    val=BestGood.val;
                     gds[BestGood.x][BestGood.y]=-1;
                     mvPath=BestPath;
                     status=1;
@@ -695,6 +707,7 @@ public class Main {
         int loading_speed;
 
         int goods_num;
+        int goods_value;
         public boolean ship;
     }
 
@@ -730,12 +743,38 @@ public class Main {
                 //预估装货时间
                 float MaxLoadNum=Math.min(berth[pos].goods_num,boat_capacity);//最大可装载量
                 wait_zhen = zhen_id+Math.ceil(MaxLoadNum/berth[pos].loading_speed);
+                berth[pos].goods_num-=MaxLoadNum;
             }
             if(wait_zhen<zhen_id){//该运货了
                 System.out.printf("go %d" + System.lineSeparator(), boat_id);
                 flag^=1;
                 berth[pos].ship=false;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
+
+                if(logOn){
+                    // 要写入文件的内容
+                    String content=zhen_id+"\n";
+                    content +=String.format("berthid：%d loadspeed：%d 剩余货物数量：%d 累积货物价值：%d \n",
+                            pos,berth[pos].loading_speed,berth[pos].goods_num,berth[pos].goods_value);
+                    content +=String.format("boatid：%d transport_time：%d boat_capacity：%d \n",
+                            boat_id,berth[pos].loading_speed,boat_capacity);
+                    int sumnum = 0,sumval = 0;
+                    for(int i=0;i<berth_num;++i){
+                        sumnum+=berth[i].goods_num;
+                        sumval+=berth[i].goods_value;
+                    }
+                    content+="总计剩余货物:"+sumnum+" 总计价值:"+sumval+"\n";
+                    try{
+                        // 将字符串转换为字节数组
+                        byte[] bytesArray = content.getBytes();
+                        // 写入内容到文件
+                        fos.write(bytesArray);
+                        fos.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         }
     }
