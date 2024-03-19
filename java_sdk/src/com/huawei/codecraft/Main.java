@@ -387,7 +387,7 @@ public class Main {
                 System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);//返航
                 boat.loadedGoods=0;
             } else {//船只已经到达泊位
-                    boat.loadGoods2();
+                boat.loadGoods2();
             }
         }
     }
