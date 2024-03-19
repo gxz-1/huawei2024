@@ -194,7 +194,7 @@ public class Main {
             }
             for (int i=0;i<5;++i){
                 //每一帧每艘船有一套相同的操作逻辑
-                mainInstance.boatMove(i);
+                mainInstance.boatMove2(i);
             }
             System.out.println("OK");
             System.out.flush();
@@ -385,7 +385,6 @@ public class Main {
         }else if(boat.status==1){ //非第一帧，船处于等待指令状态
             if(boat.pos==-1){//船只已经到达虚拟点
                 System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);//返航
-//                boat.loadGoods0();
             } else {//船只已经到达泊位
                 boat.loadGoods2();
             }
@@ -800,11 +799,12 @@ public class Main {
             }
             if(wait_zhen<zhen_id){//该运货了
                 if(flag==0){
+                    flag^=1;
                     System.out.printf("ship %d %d" + System.lineSeparator(), boat_id,boat_id*2+flag);
                 }else{
+                    flag^=1;
                     System.out.printf("go %d" + System.lineSeparator(), boat_id);
                 }
-                flag^=1;
                 berth[pos].ship=false;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
 
