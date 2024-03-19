@@ -322,7 +322,7 @@ public class Main {
      * @param i
      */
     public void findPathBypassRobots(int i, int endX , int endY) {
-        int[][] updatedBlocksArray = Arrays.copyOf(blockArray, blockArray.length+5*robot_num);
+        int[][] updatedBlocksArray = Arrays.copyOf(blockArray, blockArray.length+9*robot_num);
         //初始化后半部分
         for (int i1 = blockArray.length; i1 < updatedBlocksArray.length; i1++) {
             updatedBlocksArray[i1]=new int[]{0,0};
@@ -333,6 +333,11 @@ public class Main {
                 Robot otherRobot = robots[j];
                 int robotX = otherRobot.x;
                 int robotY = otherRobot.y;
+                for (int k = 0; k < 9; k++) {
+                    updatedBlocksArray[blockArray.length+ j+k*robot_num]= new int[]{robotX-1+k/3, robotY-1+k%3};
+                    //k/3 =0,0,0,1,1,1,2,2,2
+                    //k%3 =0,1,2,0,1,2,0,1,2
+                }
                 updatedBlocksArray[blockArray.length+ j]= new int[]{robotX, robotY};
                 updatedBlocksArray[blockArray.length+ j+1*robot_num]= new int[]{robotX-1, robotY};
                 updatedBlocksArray[blockArray.length+ j+2*robot_num]= new int[]{robotX+1, robotY};
