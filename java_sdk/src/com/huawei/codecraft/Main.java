@@ -137,12 +137,14 @@ public class Main {
                     robots[i].status = robots[i].FronzenStatus;
                     robots[i].waitTime=-1;
                     robots[i].FronzenStatus=-7;
+                    this.robotAdjacency=getRobotAdjacency();
                     findPathBypassRobots(i,robots[i].destinationX,robots[i].destinationY);
 
                 }
             }
         }
         this.robotAdjacency=getRobotAdjacency();
+
 
         for(int i = 0; i < 5; i ++) {
             boats[i].status = scanf.nextInt();//0:moving 1:workable 2:wating outside berth
@@ -245,7 +247,7 @@ public class Main {
 
     private void robotMove(int i){
         Robot r= robots[i];
-        goFirst(i);//i 大叫，我要先走了,相邻的先等一等
+//        goFirst(i);//i 大叫，我要先走了,相邻的先等一等
 
 
         if(r.status==-1){//碰撞状态:这部分处理放在input中了。
@@ -316,10 +318,11 @@ public class Main {
 
     /**
      * mainInstance use findPathBypassRobots(robot i) to find a path bypassing "robots after i" for i,and set it's mvPath
+     * bypass: 避开后续机器人的坐标以及周围1格内，避免双向碰撞
      * @param i
      */
     public void findPathBypassRobots(int i, int endX , int endY) {
-        int[][] updatedBlocksArray = Arrays.copyOf(blockArray, blockArray.length+robot_num);
+        int[][] updatedBlocksArray = Arrays.copyOf(blockArray, blockArray.length+5*robot_num);
         //初始化后半部分
         for (int i1 = blockArray.length; i1 < updatedBlocksArray.length; i1++) {
             updatedBlocksArray[i1]=new int[]{0,0};
@@ -330,8 +333,12 @@ public class Main {
                 Robot otherRobot = robots[j];
                 int robotX = otherRobot.x;
                 int robotY = otherRobot.y;
-                int[] blockIndex = new int[]{robotX, robotY};
-                updatedBlocksArray[blockArray.length+ j]= blockIndex;
+                updatedBlocksArray[blockArray.length+ j]= new int[]{robotX, robotY};
+                updatedBlocksArray[blockArray.length+ j+1*robot_num]= new int[]{robotX-1, robotY};
+                updatedBlocksArray[blockArray.length+ j+2*robot_num]= new int[]{robotX+1, robotY};
+                updatedBlocksArray[blockArray.length+ j+3*robot_num]= new int[]{robotX, robotY-1};
+                updatedBlocksArray[blockArray.length+ j+4*robot_num]= new int[]{robotX, robotY+1};
+
             }
         }
         robots[i].mvPath = AStar.findPath(robots[i].x, robots[i].y, endX, endY, updatedBlocksArray);
@@ -366,7 +373,7 @@ public class Main {
             for (int j = i + 1; j < robot_num; ++j) { // check adjacency with i's followers
                 int x_distance = Math.abs(robots[i].x - robots[j].x);
                 int y_distance = Math.abs(robots[i].y - robots[j].y);
-                if ((x_distance+y_distance)==1) {
+                if ((x_distance+y_distance)<=2) {
                     robotAdjacency[i][j] = 1;
                 }
             }
