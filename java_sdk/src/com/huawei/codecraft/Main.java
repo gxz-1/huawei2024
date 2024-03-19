@@ -387,7 +387,7 @@ public class Main {
                 System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);//返航
                 boat.loadedGoods=0;
             } else {//船只已经到达泊位
-                boat.loadGoods3();
+                    boat.loadGoods2();
             }
         }
     }
@@ -816,11 +816,6 @@ public class Main {
         }
 
         public void loadGoods3(){
-            if( wait_zhen>13000 && wait_zhen!=15000){//运到虚拟点需要最多1000帧，13000保证最后运一趟
-                System.out.printf("go %d" + System.lineSeparator(), boat_id);
-                flag^=1;
-                return;
-            }
             if(wait_zhen==15000){//约定wait_zhen==15000为开始装货物的信号
                 berth[pos].ship=true;//泊位占用信号
                 //预估装货时间
