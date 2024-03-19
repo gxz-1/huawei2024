@@ -281,7 +281,7 @@ public class Main {
         }
         //若机器人正在前往泊位的路上
         else if (r.status==2 && r.goods==1) {
-            if( ch[r.x].charAt(r.y) == 'B') { //到达泊位
+            if( ch[r.x+1].charAt(r.y) == 'B') { //到达泊位
                 System.out.printf("pull %d" + System.lineSeparator(), i);
                 berth[i].goods_num += r.goods;//机器人对应的泊位货物数量+1
                 berth[i].goods_value+=r.val;
