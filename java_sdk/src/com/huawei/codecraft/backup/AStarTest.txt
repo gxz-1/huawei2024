@@ -1,0 +1,59 @@
+package com.huawei.codecraft;
+
+import org.junit.Test;
+
+import java.util.LinkedList;
+import java.util.List;
+
+public class AStarTest {
+    @Test
+    public void testAStar() {
+        //创建测试用的blockMap
+        int[][] blockMap = new int[20][20];
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                blockMap[i][j] = 0;
+            }
+        }
+
+
+
+        //创建Astar实例-寻路器
+        AStar aStar = new AStar(blockMap);
+
+        //创建blocksArray数组
+        int[][] blocksArray = new int[][]{{5, 10}, {6, 10}, {7, 10}, {8, 10}, {9, 10}, {10, 10}, {11, 10}, {12, 10}, {13, 10}, {14, 10}};
+        //使用blocksArray数组设置blockMap
+
+        aStar.addBlocks(blocksArray);
+
+        //测试寻路器的寻路方法:findPathNode
+        List<Node> path = aStar.findPathNode(10, 0, 10, 19);
+
+        //打印路径
+        for (Node node : path) {
+            System.out.println(node.getRow() + "," + node.getCol());
+        }
+
+        //测试寻路器的寻路方法:findPathCommands
+        LinkedList<Integer> commands = aStar.findPathCommands(10, 0, 10, 19);
+
+        //打印移动指令
+        for (Integer command : commands) {
+            System.out.println(command);
+        }
+
+        //测试寻路器的deleteBlocks方法
+        aStar.deleteBlocks(blocksArray);
+
+        //测试寻路器的寻路方法:findPathNode
+        path = aStar.findPathNode(10, 0, 10, 19);
+
+        //打印路径
+        for (Node node : path) {
+            System.out.println(node.getRow() + "," + node.getCol());
+        }
+
+
+    }
+}

@@ -8,7 +8,6 @@ package com.huawei.codecraft;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,16 +26,16 @@ public class Main {
     private static final int N = 210;
 //    private static final boolean logOn=true;//是否开启船装载日志
 
-    private int money, boat_capacity, zhen_id;
+    private int money, boat_capacity, zhen_id=0;
     private String[] ch = new String[N];
     private Berth[] berth = new Berth[berth_num + 10];
 
     private int[][] gds = new int[N][N];
     private Robot[] robots = new Robot[robot_num + 10];
     private Boat[] boats = new Boat[10];
+    private AStar aStar ;//创建寻路器，在init()中初始化
 
-
-    private int[][] blockArray;
+    private Node[][] searchArea;
 
     private  int[][] robotAdjacency = new int[robot_num][robot_num];//第0行表示机器人0和1、2、3、4、5、6、7、8、9是否相邻
     //第1行表示机器人1和2、3、4、5、6、7、8、9是否相邻，也就是说只有右上方的三角矩阵是有意义的，只记录机器人i和之后的机器人是否相邻
@@ -74,7 +73,7 @@ public class Main {
 
         //2.自定义信息
 //        if(logOn){
-//            try {//TODO 船的日志信息
+//            try {
 //                fos = new FileOutputStream("out/boatlog.txt");
 //            } catch (FileNotFoundException e) {
 //                throw new RuntimeException(e);
@@ -82,15 +81,26 @@ public class Main {
 //        }
         random = new Random();
         goodsList=new CircularBuffer(goodsList_capacity);
-        ArrayList<int[]> blockList = new ArrayList<>(); //获取地图上的障碍物信息
+
+
+        //创建含地图障碍信息的寻路器
+        int[][] initBlocksMap = new int[n][n];//每行每列的障碍物是否存在的信息
+
         for(int i = 1; i <= n; i++) {//ch第0行是null
             for(int j = 0; j < n; j++) {
-                if(ch[i].charAt(j) == '#' || ch[i].charAt(j) == '*' ||ch[i].charAt(j)=='A') {
-                    blockList.add(new int[]{i-1, j});
+                if(ch[i].charAt(j) == '#' || ch[i].charAt(j) == '*' ) {
+                    initBlocksMap[i-1][j] = 1;
+                }
+                else {
+                    initBlocksMap[i-1][j] = 0;
                 }
             }
         }
-        blockArray = blockList.toArray(new int[0][0]);
+
+        this.aStar= new AStar(initBlocksMap);
+        this.searchArea= aStar.getSearchArea();
+
+
         for(int i = 0; i < robot_num; i++) {//机器人初始化
             robots[i]=new Robot();
             robots[i].robot_id = i;
@@ -124,6 +134,7 @@ public class Main {
             gds[x][y] = val;
             goodsList.add(new Agood(x,y,val));
         }
+        //读取机器人的状态并进行碰撞处理
         for(int i = 0; i < robot_num; i++) {
             robots[i].goods = scanf.nextInt();//0 表示未携带物品 1 表示携带物品
             robots[i].x = scanf.nextInt();//机器人的坐标
@@ -135,29 +146,28 @@ public class Main {
                     robots[i].FronzenStatus = robots[i].status;
                     robots[i].status=-1;
                     robots[i].waitTime = 20+random.nextInt( + 5);
-                }
-                if(robots[i].waitTime>0) {
-                robots[i].waitTime--;}
-                if (robots[i].waitTime==0){
+                }else if(robots[i].waitTime>0) {
+                    robots[i].waitTime--;
+                }else if (robots[i].waitTime==0){
                     robots[i].status = robots[i].FronzenStatus;
                     robots[i].waitTime=-1;
                 }
 
-            } else if (robots[i].sts==1) {
-                //如果有冻结的状态，就解冻，如果没有，就不管
+            } else if (robots[i].sts==1) {//机器人正常或者刚恢复
 
-                if (robots[i].FronzenStatus!=-7){
+                this.robotAdjacency=getRobotAdjacency();
+
+                //机器人正常，并非刚解冻。或者找不到离开路径，就不管。
+                if (robots[i].FronzenStatus==-7 || !findPathBypassRobots(i,robots[i].destinationX,robots[i].destinationY) ){
+
+                }else{//否则就解冻。
                     robots[i].status = robots[i].FronzenStatus;
                     robots[i].waitTime=-1;
                     robots[i].FronzenStatus=-7;
                     this.robotAdjacency=getRobotAdjacency();
-                    findPathBypassRobots(i,robots[i].destinationX,robots[i].destinationY);
-
                 }
             }
         }
-        this.robotAdjacency=getRobotAdjacency();
-
 
         for(int i = 0; i < 5; i ++) {
             boats[i].status = scanf.nextInt();//0:moving 1:workable 2:wating outside berth
@@ -173,22 +183,16 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-//        test();//TODO : 测试用新建方法
 
         Main mainInstance = new Main();
+
+//        mainInstance.test();//TODO : 跑分前要关闭！！！!!!!!!!!!!!!!!!!!!!!!!!
+
         Scanner scanf = new Scanner(System.in);
-//        //文件调试的代码
-//        Scanner scanf = null;
-//        try {
-//            scanf = new Scanner(new File("maps\\debuginput1.txt"));
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
+
         mainInstance.init(scanf);
         //与判题器交互
-        for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
-            scanf =new Scanner(System.in);
-            int zhen_id = mainInstance.input(scanf);
+        while((mainInstance.zhen_id=mainInstance.input(scanf))<=15000){
             for(int i = 0; i < robot_num; i ++){
                 mainInstance.robotMove(i);
             }
@@ -201,7 +205,7 @@ public class Main {
         }
     }
 
-    private static void test() {
+    private void test() {
         try {
 
             Main mainInstance = new Main();
@@ -211,27 +215,16 @@ public class Main {
 
 
             //与判题器交互
-
-            for(int zhen = 1; zhen <= 15000; zhen ++) { // read zhen1~15000 data from judge.exe
-                int zhen_id = mainInstance.input(scanf);
-
+            while((this.zhen_id = mainInstance.input(scanf))<15000){
                 /*
                 -----------------------测试区-------------------------
                  */
 
-//                mainInstance.robots[1].x=mainInstance.robots[0].x+1;
-//                mainInstance.robots[1].y=mainInstance.robots[0].y;
-
-//                mainInstance.getRobotAdjacency();
-
-//                mainInstance.robots[0].status=1;
                 for(int i = 0; i < robot_num; i ++){
-//                    mainInstance.robots[i].wait(10);
                     mainInstance.robotMove(i);
                 }
                 for (int i=0;i<5;++i){
                     //每一帧每艘船有一套相同的操作逻辑
-//                    mainInstance.boatMove(i);
                     mainInstance.boatMove2(i);
                 }
 
@@ -247,15 +240,6 @@ public class Main {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-
-//        //文件调试的代码
-//        Scanner scanf = null;
-//        try {
-//            scanf = new Scanner(new File("maps\\debuginput1.txt"));
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
-
     }
 
 
@@ -273,7 +257,7 @@ public class Main {
 //            r.searchGds0();
             r.searchGds1();
 //            r.searchGds2();
-            if(r.mvPath!=null && !r.mvPath.isEmpty()) System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+            r.move();
 
 
         }else if(r.status==-2){//避让状态
@@ -288,15 +272,12 @@ public class Main {
                 berth[i].goods_value+=r.val;
                 r.status = 0;
             }else {//还在路上
-                System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
+                r.move();
                 //r.mvPath!=null && r.mvPath.size()>0
             }
 
         }else if(r.status==1){//前往货物的路上
-            if (r.mvPath!=null && !r.mvPath.isEmpty()) {//还在路上
-                System.out.printf("move %d %d" + System.lineSeparator(), i, r.mvPath.poll());
-
-            } else { //到达货物？
+            if (!r.move()) {//尝试移动，移动不了，说明到目的地或者mvPath提前为0
                 if (gds[r.x][r.y] != 0) {//货物仍在，就取货
                     gds[r.x][r.y]=0;//将这个物品标记为消失
                     System.out.printf("get %d" + System.lineSeparator(), i);
@@ -330,31 +311,52 @@ public class Main {
     }
 
     /**
-     * mainInstance use findPathBypassRobots(robot i) to find a path bypassing "robots after i" for i,and set it's mvPath
-     * bypass: 避开后续机器人的坐标以及周围1格内，避免双向碰撞
-     * @param i
+     * 尝试重新寻路
+     * 避开后续机器人的坐标以及周围1格内，避免双向碰撞
+     * @param id :当前机器人id
      */
-    public void findPathBypassRobots(int i, int endX , int endY) {
-        int[][] updatedBlocksArray = Arrays.copyOf(blockArray, blockArray.length+9*robot_num);
-        //初始化后半部分
-        for (int i1 = blockArray.length; i1 < updatedBlocksArray.length; i1++) {
-            updatedBlocksArray[i1]=new int[]{0,0};
+    public boolean findPathBypassRobots(int id, int endX , int endY) {
+        int[][] addingBlocks = new int[9*robot_num][2];//一个机器人要占用9格，十个机器人就是90格
+        //因为有的机器人不相邻所以不会占用，所以addingBlocks需要全部初始化
+        for (int i = 0; i < addingBlocks.length; i++) {
+            addingBlocks[i]=new int[]{0,0};
         }
-
-        for (int j = i + 1; j < robot_num; ++j) {
-            if (robotAdjacency[i][j] == 1) {
+        //获取机器人id的后续相邻机器人的占用位置
+        for (int j = id + 1; j < robot_num; ++j) {
+            if (robotAdjacency[id][j] == 1) {//j是i的邻居机器人
                 Robot otherRobot = robots[j];
                 int robotX = otherRobot.x;
                 int robotY = otherRobot.y;
-                for (int k = 0; k < 9; k++) {
-                    updatedBlocksArray[blockArray.length+ j+k*robot_num]= new int[]{robotX-1+k/3, robotY-1+k%3};
-                    //k/3 =0,0,0,1,1,1,2,2,2
-                    //k%3 =0,1,2,0,1,2,0,1,2
+                for (int k = 0; k < 9; k++) {//把九宫格内的非障碍节点添加到假设障碍数组中
+
+                    int consideringX=robotX-1+k/3;//k/3 =0,0,0,1,1,1,2,2,2
+                    int consideringY=robotY-1+k%3;//k%3 =0,1,2,0,1,2,0,1,2
+
+                    if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                        addingBlocks[j*9+k]= new int[]{robotX-1+k/3, robotY-1+k%3};
+                    }
+
                 }
 
             }
         }
-        robots[i].mvPath = AStar.findPath(robots[i].x, robots[i].y, endX, endY, updatedBlocksArray);
+        //更新障碍物数组
+        aStar.addBlocks(addingBlocks);
+//        aStar.deleteBlocks(new int[][]{{robots[id].x,robots[id].y}});//删除机器人自身的障碍
+        //尝试避人寻路
+        LinkedList<Integer> tryPath = aStar.findPathCommands(robots[id].x, robots[id].y, endX, endY);
+        if (tryPath!=null&& !tryPath.isEmpty()){
+            robots[id].mvPath = tryPath;
+            //清除机器人占用的障碍物
+            aStar.deleteBlocks(addingBlocks);
+            return true;
+        }else {
+            //清除机器人占用的障碍物
+            aStar.deleteBlocks(addingBlocks);
+            return false;
+        }
+
+
 
     }
 
@@ -452,6 +454,20 @@ public class Main {
 
         }
 
+        /**
+         * use r.move()to move robot r or redirect path if mvPath is wrong
+         */
+        public boolean move() {
+            if (mvPath != null && !mvPath.isEmpty()) {//还没到就移动
+                System.out.printf("move %d %d" + System.lineSeparator(), robot_id, mvPath.poll());
+                return true;
+            } else if(x==destinationX && y==destinationY){ //到了就停止
+                return false;
+            }else{//异常情况，重新寻路
+                mvPath = aStar.findPathCommands(x, y, destinationX, destinationY);
+                return false;
+            }
+        }
         //碰撞后处理只用改这里
 
         /**
@@ -466,7 +482,7 @@ public class Main {
             }else{//机器人携带货物，则重新随机寻路一个泊位
                 //随机一个泊位编号
                 int berthId = random.nextInt(10);
-                mvPath=AStar.findPath(x, y, berth[berthId].x + 2, berth[berthId].y + 2,blockArray);
+                mvPath=aStar.findPathCommands(x, y, berth[berthId].x + 2, berth[berthId].y + 2);
                 //如果能找到路径，则前往泊位，否则跳过此帧
                 if(mvPath.size()>0){
                     status=2;
@@ -511,7 +527,7 @@ public class Main {
             ArrayList<int[]> goodsList = new ArrayList<>();
             for(int j=x-range;j<x+range;++j){
                 for(int k=y-range;k<y+range;++k){
-                    //TODO 只找前10个
+                    //只找前10个
                     if(goodsList.size()<10 && j>=0 && j<goodsMap.length && k>=0 && k<goodsMap[0].length && goodsMap[j][k]>0){//是货物
                         int[] Good = new int[]{j,k};
                         goodsList.add(Good);
@@ -524,12 +540,11 @@ public class Main {
                 }
             }
             if(BestGood!=null){//才能试图寻找BestPath
-                BestPath = AStar.findPath(x, y, BestGood[0], BestGood[1],blockArray);
+                BestPath = aStar.findPathCommands(x, y, BestGood[0], BestGood[1]);
                 if(BestPath==null||BestPath.size()==0){//TODO 找列表中第一个货物
                     int[] Good = goodsList.get(0);
-                    BestPath = AStar.findPath(x, y, Good[0], Good[1],blockArray);
+                    BestPath = aStar.findPathCommands(x, y, Good[0], Good[1]);
                 }
-//                        BestPath = mainInstance.findPathAvoidingRobots(r.x, r.y, BestGood[0], BestGood[1], i);
                 if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
                     //机器人已锁定此货物，别的机器人不能再取
                     gds[BestGood[0]][BestGood[1]]=-1;
@@ -561,10 +576,10 @@ public class Main {
             if(BestGood!=null){//才能试图寻找BestPath
                 this.destinationX = BestGood.x;
                 this.destinationY = BestGood.y;
-                BestPath = AStar.findPath(x, y, this.destinationX, this.destinationY,blockArray);
+                BestPath = aStar.findPathCommands(x, y, this.destinationX, this.destinationY);
 //                BestPath = findPathAvoidingRobots(x, y, BestGood.x, BestGood.y, robot_id, blockArray,robots);
                 if(BestPath.size() == 0 && NextBestGood != null){//TODO 找次好的货物
-                    BestPath = AStar.findPath(x, y, NextBestGood.x, NextBestGood.y,blockArray);
+                    BestPath = aStar.findPathCommands(x, y, NextBestGood.x, NextBestGood.y);
                     this.destinationX = NextBestGood.x;
                     this.destinationY = NextBestGood.y;
                 }
@@ -580,41 +595,6 @@ public class Main {
 
 
 
-        //基于高级避障的查找货物
-        public void searchGds2(){
-            long MaxWeight=-1;//权重定义为货物价值/距离机器人的距离
-            LinkedList<Integer> BestPath=null;
-            Agood BestGood=null;
-            Agood NextBestGood=null;
-            //搜索goodsList中最佳的货物
-            for(int i=0;i<goodsList.size();++i){
-                Agood temp_goods=goodsList.get(i);
-                if(gds[temp_goods.x][temp_goods.y]<=0){//货物不存在或已被其他机器人锁定,则跳过
-                    continue;
-                }
-                int distance = Math.abs(x - temp_goods.x) + Math.abs(y - temp_goods.y);
-                if(distance!=0  &&  (temp_goods.val/distance)>MaxWeight){//更新权重最大的物品
-                    MaxWeight=temp_goods.val/distance;
-                    NextBestGood=BestGood;
-                    BestGood=temp_goods;
-                }
-            }
-            if(BestGood!=null){//才能试图寻找BestPath
-//                BestPath = AStar.findPath(x, y, BestGood.x, BestGood.y,blockArray);
-                BestPath = findPathAvoidingRobots(x, y, BestGood.x, BestGood.y, robot_id, blockArray,robots);
-                if(BestPath.size() == 0 && NextBestGood != null){//TODO 找次好的货物
-                    BestPath = AStar.findPath(x, y, NextBestGood.x, NextBestGood.y,blockArray);
-                    BestGood=NextBestGood;
-                }
-                if (!BestPath.isEmpty()) {//只有当找到路径时才能保存到BestPath
-                    //机器人已锁定此货物，别的机器人不能再取
-                    val=BestGood.val;
-                    gds[BestGood.x][BestGood.y]=-1;
-                    mvPath=BestPath;
-                    status=1;
-                }
-            }
-        }
 
 
 
@@ -623,7 +603,7 @@ public class Main {
             status=2;
             this.destinationX = berth[robot_id].x + 2;
             this.destinationY = berth[robot_id].y + 2;
-            mvPath= AStar.findPath(x, y, destinationX, destinationY,blockArray);
+            mvPath= aStar.findPathCommands(x, y, destinationX, destinationY);
         }
 
         public void searchBerth1(Berth[] berths){//曼哈顿距离找最近的泊位
@@ -638,75 +618,14 @@ public class Main {
                 }
             }
             if (MinBerth != null) {
-                mvPath= AStar.findPath(x, y, MinBerth.x, MinBerth.y,blockArray);
-            }
-        }
-
-        public void searchBerth2(Berth[] berths){//曼哈顿距离找最近的泊位
-            status=2;
-            int MinDistance=10000;
-            Berth MinBerth=null;
-            for(int i=0;i<berth_num;++i){
-                int distance = Math.abs(x - berths[i].x) + Math.abs(y - berths[i].y);
-                if(distance<MinDistance){
-                    MinDistance=distance;
-                    MinBerth=berths[i];
-                }
-            }
-            if (MinBerth != null) {
-//                mvPath= AStar.findPath(x, y, MinBerth.x, MinBerth.y,blockArray);
-                mvPath= findPathAvoidingRobots(x, y, MinBerth.x, MinBerth.y, robot_id, blockArray,robots);
+                mvPath= aStar.findPathCommands(x, y, MinBerth.x, MinBerth.y);
             }
         }
     }
 
 
-    /**
-     * 机器人避障寻路(Main 的静态方法)
-     */
-    public static LinkedList<Integer> findPathAvoidingRobots(int startX, int startY, int endX, int endY, int currentRobotIndex, int[][] blockArray ,Robot[] robots) {
-
-        int[][] updatedBlocksArray = Arrays.copyOf(blockArray, blockArray.length);
-        for (int i = 0; i < updatedBlocksArray.length; i++) {
-            for (int j = 0; j < 2; j++) {
-
-            }
-        }
-
-        //mvPath 和 节点差值 转换字典
-        int[][] nodeMoveDict = new int[][]{{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
-
-        // 更新障碍物数组以包含其他机器人的位置作为临时障碍
-        List<int[]> blocksList = Arrays.stream(updatedBlocksArray).collect(Collectors.toList());
-        for (int i = 0; i < 10; i++) {
-            if (i != currentRobotIndex && robots[i].mvPath!=null) { // 排除当前计算路径的机器人 和没有mvPath的机器人
-                Robot otherRobot = robots[i];
-                int robotX = otherRobot.x;
-                int robotY = otherRobot.y;
 
 
-                //虚拟行走预演
-                for (int index=0;i<otherRobot.mvPath.size();index++) {//把别的机器人的可能路径也标记为障碍
-                    int moveCommand = otherRobot.mvPath.poll();
-                    int[] move = nodeMoveDict[moveCommand];
-                    robotX += move[0];
-                    robotY += move[1];
-                    int[] blockIndex = new int[]{robotX, robotY};
-                    blocksList.add(blockIndex);
-
-
-                }
-
-
-
-
-            }
-        }
-        updatedBlocksArray = blocksList.toArray(new int[0][]);
-
-        // 使用更新的障碍物数组计算路径
-        return AStar.findPath(startX, startY, endX, endY, updatedBlocksArray);
-    }
 
     /**
      * Entity: Berth
