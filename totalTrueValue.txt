@@ -1,1 +1,0 @@
-totalTrueValue: 226435

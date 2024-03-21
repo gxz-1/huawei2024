@@ -24,7 +24,7 @@ public class BFSPathSearch {
             if (gds[x][y][0] > 0 && gds[x][y][1]+1000>now_zhen) {
                 current.gdsValue = gds[x][y][0]; // 记录gds值
                 foundTargets.add(current);
-                if (foundTargets.size() == 10) {
+                if (foundTargets.size() == 8) {
                     break;
                 }
             }
@@ -56,11 +56,11 @@ public class BFSPathSearch {
 
         while (!queue.isEmpty()) {
             Point current = queue.poll();
-            int x = current.x;//row=x-1
-            int y = current.y;//col=y
+            int x = current.x;
+            int y = current.y;
 
             // 检查当前点是否是目标点
-            if (ch[x+1].charAt(y) == 'B') { //ch并非map，ch[x+1][y]才表示map[x][y]
+            if (ch[x].charAt(y) == 'B') {
                 return new Point(x,y,0);
             }
 
@@ -78,6 +78,59 @@ public class BFSPathSearch {
         return null; // 如果没有找到泊位，则返回null
     }
 
+    /**
+     * 修改传入的ch2berth数组
+     * @param ch
+     * @param ch2berth
+     * @param berth
+     */
+    public static void createch2berth(String[] ch, berthInfo[][] ch2berth, Main.Berth[] berth) {
+        // 使用嵌套循环为每个元素分配实例
+        for (int i = 1; i < 201; i++) {
+            for (int j = 0; j < 201; j++) {
+                ch2berth[i][j] = new berthInfo(); // 根据实际情况传递参数
+            }
+        }
+        //遍历10个泊位
+        for(int i=0;i<10;++i){
+            //BFS
+            boolean[][] visited = new boolean[201][201];
+            Queue<Point> queue = new LinkedList<>();
+            queue.offer(new Point(berth[i].x+1, berth[i].y, 0));
+            visited[berth[i].x+1][berth[i].y] = true;
+            int distance=1;
+            while (!queue.isEmpty()) {
+                for (int j=0;j<queue.size();++j){
+                    Point current = queue.poll();
+                    int x = current.x;
+                    int y = current.y;
+                    // 检查当前点是否可以更新标记
+                    if (ch[x].charAt(y) == '.'){
+                        if(ch2berth[x][y].distance==-1 || distance<ch2berth[x][y].distance){//更新
+                            ch2berth[x][y].distance=distance;
+                            ch2berth[x][y].berth_id=berth[i].berth_id;
+                        }
+//                        else {//剪枝
+//                            continue;
+//                        }
+                    }
+
+                    // 遍历所有可移动的邻居节点
+                    for (int k = 0; k < 4; k++) {
+                        int nx = x + dx[k];
+                        int ny = y + dy[k];
+
+                        if (nx >= 1 && nx < 201 && ny >= 1 && ny < 201 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
+                            queue.offer(new Point(nx, ny, 0)); // 新点的gds值暂时设为0
+                            visited[nx][ny] = true;
+                        }
+                    }
+                }
+                distance++;
+            }
+        }
+    }
+
 
     public static class Point {
         int x, y;
@@ -89,5 +142,15 @@ public class BFSPathSearch {
             this.gdsValue = gdsValue;
         }
     }
+
+    public static class berthInfo{
+        int berth_id;
+        int distance;
+        berthInfo(){
+            berth_id=-1;
+            distance=-1;
+        }
+    }
+
 
 }
