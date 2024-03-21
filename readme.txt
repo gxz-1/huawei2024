@@ -6,6 +6,8 @@
 *OnlineMap -14w，515帧开始卡得要死，卡顿往往伴随“碰撞，get货，pull货”   *map-3.13 -18w，无明显问题
     ？巨卡，卡顿往往伴随“碰撞，get货，pull货”，可能是由于searchGoods3不再是遍历goodList，而是广度优先。
         ！换用新版A星:寻路货物和泊位时改用新版A星，避人寻路没用 *mapOnline - 15w *map-3.13 - 18w
+        ！避人时也用fastA星* *15w,有时会连环堵塞，不知道是啥原因，线上版本是7万分
+            ？fastA星避人方法有问题，会导致连环碰撞。为什么？244 4 撞，
         ！getRobotAdjacency()位置优化
         ！历史bestGood统计，能否加快搜索？
 
