@@ -47,6 +47,38 @@ public class BFSPathSearch {
         return maxPoint.orElse(null); // 如果没有找到目标点，则返回null
     }
 
+    public static Point findMinBerth(String[] ch, int begx, int begy) {
+        boolean[][] visited = new boolean[201][201]; // 记录已访问的节点
+        Queue<Point> queue = new LinkedList<>();
+
+        queue.offer(new Point(begx, begy, 0)); // 初始点的gds值设为0
+        visited[begx][begy] = true;
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+            int x = current.x;//row=x-1
+            int y = current.y;//col=y
+
+            // 检查当前点是否是目标点
+            if (ch[x+1].charAt(y) == 'B') { //ch并非map，ch[x+1][y]才表示map[x][y]
+                return new Point(x,y,0);
+            }
+
+            // 遍历所有可移动的邻居节点
+            for (int i = 0; i < 4; i++) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                if (nx >= 1 && nx < 201 && ny >= 1 && ny < 201 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
+                    queue.offer(new Point(nx, ny, 0)); // 新点的gds值暂时设为0
+                    visited[nx][ny] = true;
+                }
+            }
+        }
+        return null; // 如果没有找到泊位，则返回null
+    }
+
+
     public static class Point {
         int x, y;
         int gdsValue; // 目标点的gds值
