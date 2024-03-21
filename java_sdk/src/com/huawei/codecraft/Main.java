@@ -420,16 +420,41 @@ public class Main {
                 int consideringX = -1;
                 int consideringY =-1;
 
-                for (int k = 0; k < 9; k++) {//把九宫格内的非障碍节点添加到假设障碍数组中
-
-                    consideringX=otherRobot.x-1+k/3;//k/3 =0,0,0,1,1,1,2,2,2
-                    consideringY=otherRobot.y-1+k%3;//k%3 =0,1,2,0,1,2,0,1,2
-
-                    if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
-                        addingBlocksList.add(new int[]{consideringX, consideringY});
-                    }
-
+                consideringX = otherRobot.x - 1;
+                consideringY = otherRobot.y;
+                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                    addingBlocksList.add(new int[]{consideringX, consideringY});
                 }
+
+                consideringX = otherRobot.x;
+                consideringY = otherRobot.y-1;
+                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                    addingBlocksList.add(new int[]{consideringX, consideringY});
+                }
+
+                consideringX = otherRobot.x+1;
+                consideringY = otherRobot.y;
+                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                    addingBlocksList.add(new int[]{consideringX, consideringY});
+                }
+
+                consideringX = otherRobot.x;
+                consideringY = otherRobot.y+1;
+                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                    addingBlocksList.add(new int[]{consideringX, consideringY});
+                }
+
+
+//                for (int k = 0; k < 9; k++) {//把九宫格内的非障碍节点添加到假设障碍数组中
+//
+//                    consideringX=otherRobot.x-1+k/3;//k/3 =0,0,0,1,1,1,2,2,2
+//                    consideringY=otherRobot.y-1+k%3;//k%3 =0,1,2,0,1,2,0,1,2
+//
+//                    if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+//                        addingBlocksList.add(new int[]{consideringX, consideringY});
+//                    }
+//
+//                }
 
             }
         }
