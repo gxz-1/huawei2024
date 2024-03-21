@@ -757,6 +757,9 @@ public class Main {
             }
         }
 
+        /**
+         *根据ch2berth直接取出当前位置最近的泊位中心点，然后前往中心点。
+         */
         public void searchBerth3(){//BFS找最近的泊位
             status=2;
             BFSPathSearch.berthInfo berthInfo = ch2berth[x][y];
@@ -764,7 +767,7 @@ public class Main {
                 this.destinationX= berth[berthInfo.berth_id].x+2;
                 this.destinationY= berth[berthInfo.berth_id].y+2;
 //                mvPath= AStar.findPath(x, y, berth[berthInfo.berth_id].x+2, berth[berthInfo.berth_id].y+2,blockArray);
-                mvPath= fastAStar.findPathCommands(x, y, berth[berthInfo.berth_id].x+2, berth[berthInfo.berth_id].y+2);
+                mvPath= fastAStar.findPathCommands(x, y, this.destinationX, this.destinationY);
             }
         }
 
