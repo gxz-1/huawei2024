@@ -25,7 +25,7 @@ public class Main {
     private static final int robot_num = 10;
     private static final int berth_num = 10;
     private static final int N = 210;
-    private static final boolean logOn=false;//是否开启船装载日志
+    private static final boolean logOn=true;//是否开启船装载日志
 
     private static final boolean testOn=false;
 
@@ -36,7 +36,6 @@ public class Main {
     private int[][][] gds = new int[N][N][2];//额外记录生成时间，用于判断物品是否消失
     private Robot[] robots = new Robot[robot_num + 10];
     private Boat[] boats = new Boat[10];
-
 
 
 
@@ -135,7 +134,6 @@ public class Main {
         }
 
         BFSPathSearch.createch2berth(ch,ch2berth,berth);
-
 
         String OK = scanf.nextLine();//scanf.nextLine();
         System.out.println("OK");
@@ -269,7 +267,7 @@ public class Main {
                 for (int i=0;i<5;++i){
                     //每一帧每艘船有一套相同的操作逻辑
 //                    mainInstance.boatMove(i);
-                    mainInstance.boatMove2(i);
+                    mainInstance.boatMove3(i);
                 }
 
                 /*
@@ -343,7 +341,7 @@ public class Main {
                 if (gds[r.x][r.y][0] != 0) {//货物仍在，就取货
                     gds[r.x][r.y][0]=0;//将这个物品标记为消失
                     System.out.printf("get %d" + System.lineSeparator(), i);
-                    r.searchBerth3();
+                    r.searchBerth0();
 //                    r.searchBerth1(berth);
                 } else {
                     r.status=0;//if good has been taken by other robot
@@ -508,7 +506,34 @@ public class Main {
                 System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2+boat.flag);//返航
                 boat.loadedGoods=0;
             } else {//船只已经到达泊位
-                boat.loadGoods2();
+                boat.loadGoods0();
+            }
+        }
+    }
+    private void boatMove3(int i){
+        Boat boat=boats[i];
+        if (zhen_id ==1){//第一帧让船初始化到0，2，4
+            System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);
+        }else if(boat.status==0 || boat.status==2){//非第一帧，船处于0:船移动中 2:泊位外等待
+            //不执行操作
+        }else if(boat.status==1){ //非第一帧，船处于等待指令状态
+            if(boat.pos==-1){//船只已经到达虚拟点
+                //找数量最多的泊位
+                int maxNum=0;
+                int maxId=-1;
+                for (int j=0;j<10;++j){
+                    Berth b=berth[j];
+                    if(!b.ship){
+                        if(b.goods_num>maxNum){
+                            maxNum=b.goods_num;
+                            maxId=b.berth_id;
+                        }
+                    }
+                }
+                System.out.printf("ship %d %d" + System.lineSeparator(), i,maxId);//返航
+                boat.loadedGoods=0;
+            } else {//船只已经到达泊位
+                boat.loadGoods4();
             }
         }
     }
@@ -722,7 +747,7 @@ public class Main {
             status=2;
             this.destinationX = berth[robot_id].x + 2;
             this.destinationY = berth[robot_id].y + 2;
-//            mvPath= AStar.findPath(x, y, destinationX, destinationY,blockArray);
+            mvPath= fastAStar.findPathCommands(this.x,this.y,destinationX,destinationY);
         }
 
         public void searchBerth1(){//曼哈顿距离找最近的泊位
@@ -845,11 +870,11 @@ public class Main {
             }
             if(wait_zhen<zhen_id){//该运货了
                 if(flag==0){
-                    flag^=1;
-                    System.out.printf("ship %d %d" + System.lineSeparator(), boat_id,boat_id*2+flag);
+                        flag^=1;
+                        System.out.printf("ship %d %d" + System.lineSeparator(), boat_id,boat_id*2+flag);
                 }else{
-                    flag^=1;
-                    System.out.printf("go %d" + System.lineSeparator(), boat_id);
+                        flag^=1;
+                        System.out.printf("go %d" + System.lineSeparator(), boat_id);
 
                     if(logOn){
                         // 要写入文件的内容
@@ -898,6 +923,22 @@ public class Main {
                     flag^=1;
                     System.out.printf("ship %d %d" + System.lineSeparator(), boat_id,boat_id*2+flag);
                 }
+                berth[pos].ship=false;
+                wait_zhen=15000;//到下次可以装货的时候执行上面的代码
+            }
+        }
+
+        public void loadGoods4(){//装满就去虚拟点
+            if(wait_zhen==15000){//约定wait_zhen==15000为开始装货物的信号
+                berth[pos].ship=true;//泊位占用信号
+                //预估装货时间
+                float MaxLoadNum=Math.min(berth[pos].goods_num,boat_capacity);//最大可装载量
+                wait_zhen = zhen_id+Math.ceil(MaxLoadNum/berth[pos].loading_speed);
+                berth[pos].goods_num-=MaxLoadNum;
+                loadedGoods+= (int) MaxLoadNum;
+            }
+            if( wait_zhen<zhen_id){//该运货了
+                System.out.printf("go %d" + System.lineSeparator(), boat_id);
                 berth[pos].ship=false;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
             }

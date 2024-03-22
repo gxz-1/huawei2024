@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="908afbf0-4a5e-4217-b96c-3c8b8eb5fbe8" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/BFSPathSearch$berthInfo.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/FastAStar$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/FastAStar.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/java_sdk2.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/.idea/codecraft.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/AStar.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/AStarTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/Agood.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/BFSPathSearch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/CircularBuffer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/JpsPathSearch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/Main2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/Node.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/Nodev1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/Segment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/backup/AStarPathSearchv1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/backup/JpsPathSearch.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/backup/Main.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/backup/Nodev1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/backup/debugMain.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/backup/dfsPathSearch.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/backup/test.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/debugMain.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java_sdk2/src/com/huawei/codecraft/readme.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/.idea/codecraft.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/AStar.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/Agood.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/BFSPathSearch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/CircularBuffer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/FastAStar.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/Node.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/backup/AStarPathSearchv1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/backup/JpsPathSearch.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/backup/Main.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/backup/Nodev1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/backup/debugMain.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/backup/dfsPathSearch.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/huawei/codecraft/backup/test.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.20.46.58.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.20.51.26.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.21.13.46.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.21.17.49.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.21.20.03.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.21.21.58.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.21.23.34.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.21.26.03.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.22.01.49.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.22.15.12.rep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../replay/2024-03-21.22.17.45.rep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../OurDemo.jar" beforeDir="false" afterPath="$PROJECT_DIR$/../OurDemo.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/AStar$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/AStar$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/AStar.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/AStar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Agood.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Agood.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/BFSPathSearch$Point.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/BFSPathSearch$Point.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/BFSPathSearch.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/BFSPathSearch.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/CircularBuffer.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/CircularBuffer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main$Berth.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main$Berth.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main$Boat.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main$Boat.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main$Robot.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main$Robot.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/../bin/com/huawei/codecraft/Node.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java_sdk/src.zip" beforeDir="false" afterPath="$PROJECT_DIR$/../java_sdk/src.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java_sdk/src/com/huawei/codecraft/BFSPathSearch.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java_sdk/src/com/huawei/codecraft/BFSPathSearch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java_sdk/src/com/huawei/codecraft/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java_sdk/src/com/huawei/codecraft/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/out.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../out/out.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main$Berth.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main$Berth.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main$Boat.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main$Boat.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main$Robot.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main$Robot.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/HUAWEICup/com/huawei/codecraft/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../run_our_demo.bat" beforeDir="false" afterPath="$PROJECT_DIR$/../run_our_demo.bat" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="D:/Program Files/Java/apache-maven-3.6.3" />
+        <option name="useMavenConfig" value="true" />
+        <option name="userSettingsFile" value="D:\Program Files\Java\apache-maven-3.6.3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2e0AIwPpXS47MGs1agSZNdEEdSH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "E:/CodeWorkspace/java/HUAWEICup/java_sdk3",
+    "settings.editor.selected.configurable": "MavenSettings"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="908afbf0-4a5e-4217-b96c-3c8b8eb5fbe8" name="更改" comment="" />
+      <created>1711031045954</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1711031045954</updated>
+    </task>
+    <servers />
+  </component>
+</project>
