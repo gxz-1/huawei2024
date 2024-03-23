@@ -37,6 +37,13 @@ public class Main {
     private Robot[] robots = new Robot[robot_num + 10];
     private Boat[] boats = new Boat[10];
 
+    private PriorityQueue<int[]> availableBerths = new PriorityQueue<>(new Comparator<int[]>() {
+        @Override
+        public int compare(int[] o1, int[] o2) {
+            return o1[1] - o2[1];
+        }//按照泊位的开销从小到大排序，int[0]是泊位id，int[1]是泊位的开销
+    });
+
 
 
 
@@ -231,8 +238,10 @@ public class Main {
             }
             for (int i=0;i<5;++i){
                 //每一帧每艘船有一套相同的操作逻辑
+//                mainInstance.boatMove3(i);
                 mainInstance.boatMove2(i);
             }
+
 //            mainInstance.robotAdjacency=null;
             System.out.println("OK");
             System.out.flush();
@@ -269,7 +278,9 @@ public class Main {
                 for (int i=0;i<5;++i){
                     //每一帧每艘船有一套相同的操作逻辑
 //                    mainInstance.boatMove(i);
-                    mainInstance.boatMove2(i);
+//                    mainInstance.boatMove2(i);
+//                    mainInstance.boatMove3(i);//智能来回
+                    mainInstance.boatMove2(i);//2泊位来回
                 }
 
                 /*
@@ -343,8 +354,8 @@ public class Main {
                 if (gds[r.x][r.y][0] != 0) {//货物仍在，就取货
                     gds[r.x][r.y][0]=0;//将这个物品标记为消失
                     System.out.printf("get %d" + System.lineSeparator(), i);
-                    r.searchBerth3();
-//                    r.searchBerth1(berth);
+//                    r.searchBerth3();
+                    r.searchBerth0();
                 } else {
                     r.status=0;//if good has been taken by other robot
                 }
@@ -422,25 +433,25 @@ public class Main {
 
                 consideringX = otherRobot.x - 1;
                 consideringY = otherRobot.y;
-                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                if (consideringX>=0&&!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
                     addingBlocksList.add(new int[]{consideringX, consideringY});
                 }
 
                 consideringX = otherRobot.x;
                 consideringY = otherRobot.y-1;
-                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                if (consideringY>=0 && !searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
                     addingBlocksList.add(new int[]{consideringX, consideringY});
                 }
 
                 consideringX = otherRobot.x+1;
                 consideringY = otherRobot.y;
-                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                if (consideringX<200 && !searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
                     addingBlocksList.add(new int[]{consideringX, consideringY});
                 }
 
                 consideringX = otherRobot.x;
                 consideringY = otherRobot.y+1;
-                if (!searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
+                if (consideringY <200 && !searchArea[consideringX][consideringY].isBlock()) {//如果不是障碍
                     addingBlocksList.add(new int[]{consideringX, consideringY});
                 }
 
@@ -512,6 +523,66 @@ public class Main {
             }
         }
     }
+
+    /**
+     * 智能运船：
+     *
+     *      * 每一帧，当有船位于虚拟点，为所有ship=flase的泊位计算优先度，并插入可用泊位。
+     *      *      优先度计算：去某泊位的本趟货物价值/预估运输耗时=berth.goodValue/（transportTime*2+loadingTime），
+     *      * loadTime=berth.goodNum/uploadSpeed
+     *      * 依次取出最高优先度的第一个泊位，分配给位于虚拟点的船来ship，并设置对应泊位的ship信号为true
+     *      * 当有船装好货物准备go时，设置泊位的ship信号为false表示泊位可以停靠。
+     *      每一帧结束，清空availableBerths队列
+     * @param i
+     */
+    private void boatMove3(int i){
+        Boat boat=boats[i];
+
+        if(boat.status==1){//船等待指令
+            if(boat.pos==-1){//船只已经到达虚拟点
+                //每帧队列会清空。如果队列非空，说明本帧有船到达虚拟点并且已经生成了泊位队列，后续船只直接poll就行，否则需要生成泊位队列
+                if(availableBerths.isEmpty()){
+                    generateAvailableBerths();
+                }
+
+                //依次取出最高优先度的第一个泊位，分配给位于虚拟点的船来ship，并设置对应泊位的ship信号为true
+                if (!availableBerths.isEmpty()) {
+                    int bestBerth = availableBerths.poll()[0];
+                    berth[bestBerth].ship=true;
+                    System.out.printf("ship %d %d" + System.lineSeparator(),i, bestBerth);
+                } else {
+                    System.out.printf("ship %d %d" + System.lineSeparator(), i,i*2);//生成泊位出问题了
+                }
+            } else {//船只已经到达泊位,应该装货，离开，然后设置泊位的ship信号为false表示泊位可以停靠。
+                boat.loadGoods4();
+//                    System.out.printf("go %d" + System.lineSeparator(), boat.boat_id);
+//                    berth[boat.pos].ship=false;
+
+
+            }
+
+        }else {//船移动中或泊位外等待
+            //不执行操作
+
+        }
+        if(i==4&&!availableBerths.isEmpty()) availableBerths.clear();//每一帧结束，清空availableBerths队列
+
+    }
+
+    /**
+     * 生成泊位优先队列并且赋值给availableBerths
+     */
+    private void generateAvailableBerths(){
+        for (int j = 0; j < berth_num; j++) {
+            if(!berth[j].ship){//如果泊位没有船
+                int loadingTime=berth[j].goods_num/berth[j].loading_speed;
+                int cost = (2*berth[j].transport_time+loadingTime)/(berth[j].goods_value+1);
+                availableBerths.add(new int[]{j,cost});
+            }
+        }
+    }
+
+
 
 
     /**
@@ -722,7 +793,10 @@ public class Main {
             status=2;
             this.destinationX = berth[robot_id].x + 2;
             this.destinationY = berth[robot_id].y + 2;
-//            mvPath= AStar.findPath(x, y, destinationX, destinationY,blockArray);
+            LinkedList<Integer> path = fastAStar.findPathCommands(x, y, destinationX, destinationY);
+            if (!path.isEmpty()) {
+                mvPath = path;
+            }
         }
 
         public void searchBerth1(){//曼哈顿距离找最近的泊位
@@ -798,6 +872,8 @@ public class Main {
         int pos;
         int status;
         int loadedGoods;
+
+        int loadedValue=0;
         int flag;
         double wait_zhen;
 
@@ -901,6 +977,51 @@ public class Main {
                 berth[pos].ship=false;
                 wait_zhen=15000;//到下次可以装货的时候执行上面的代码
             }
+        }
+
+        /**
+         * 传入装载货船的id，返回是否不能再装货，应该离开
+         * 装货，离开，ship=flase
+         */
+        public boolean loadGoods4(){
+            if(wait_zhen==15000){//约定wait_zhen==15000为开始装货物的信号
+                berth[pos].ship=true;//泊位占用信号
+                //预估装货时间
+                float MaxLoadNum=Math.min(berth[pos].goods_num,boat_capacity);//最大可装载量
+                wait_zhen = zhen_id+Math.ceil(MaxLoadNum/berth[pos].loading_speed);
+                berth[pos].goods_num-=MaxLoadNum;
+                //预估装载的货物价值
+                this.loadedValue= berth[pos].goods_value;
+                berth[pos].goods_value=0;
+
+                loadedGoods+= (int) MaxLoadNum;
+
+                return true;
+
+
+            }
+            else if (wait_zhen<zhen_id){//该运货了
+                wait_zhen=15000;//到下次可以装货的时候执行上面的代码
+
+
+                if(loadedGoods>=boat_capacity){ //容量满了就运
+                    System.out.printf("go %d" + System.lineSeparator(), boat_id);
+                }else {//去另一个泊位
+                    generateAvailableBerths();
+                    if(!availableBerths.isEmpty()) {
+                        System.out.printf("ship %d %d" + System.lineSeparator(), boat_id, availableBerths.poll()[0]);
+                    }else {
+                        System.out.printf("ship %d %d" + System.lineSeparator(), boat_id,boat_id*2+flag);
+                        flag^=1;
+                    }
+                }
+
+                berth[pos].ship=false;
+                return false;
+
+            }
+            else return false;
+
         }
     }
 
