@@ -24,7 +24,7 @@ public class BFSPathSearch {
             if (gds[x][y][0] > 0 && gds[x][y][1]+1000>now_zhen) {
                 current.gdsValue = gds[x][y][0]; // 记录gds值
                 foundTargets.add(current);
-                if (foundTargets.size() == 8) {
+                if (foundTargets.size() == 4) {
                     break;
                 }
             }
@@ -34,7 +34,8 @@ public class BFSPathSearch {
                 int nx = x + dx[i];
                 int ny = y + dy[i];
 
-                if (nx >= 1 && nx < 201 && ny >= 1 && ny < 201 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
+                System.out.println("ny = " + ny+" ny = " + ny);
+                if (nx >= 1 && nx < 201 && ny >= 1 && ny < 200 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
                     queue.offer(new Point(nx, ny, 0)); // 新点的gds值暂时设为0
                     visited[nx][ny] = true;
                 }
@@ -69,7 +70,7 @@ public class BFSPathSearch {
                 int nx = x + dx[i];
                 int ny = y + dy[i];
 
-                if (nx >= 1 && nx < 201 && ny >= 1 && ny < 201 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
+                if (nx >= 1 && nx < 201 && ny >= 1 && ny < 200 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
                     queue.offer(new Point(nx, ny, 0)); // 新点的gds值暂时设为0
                     visited[nx][ny] = true;
                 }
@@ -120,7 +121,7 @@ public class BFSPathSearch {
                         int nx = x + dx[k];
                         int ny = y + dy[k];
 
-                        if (nx >= 1 && nx < 201 && ny >= 1 && ny < 201 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
+                        if (nx >= 1 && nx < 201 && ny >= 1 && ny < 200 && !visited[nx][ny] && (ch[nx].charAt(ny) == 'B' || ch[nx].charAt(ny) == '.')) {
                             queue.offer(new Point(nx, ny, 0)); // 新点的gds值暂时设为0
                             visited[nx][ny] = true;
                         }
@@ -140,6 +141,19 @@ public class BFSPathSearch {
             this.x = x;
             this.y = y;
             this.gdsValue = gdsValue;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true; // 检查是否为同一对象引用
+            if (o == null || getClass() != o.getClass()) return false; // 检查是否为同一类型
+            Point point = (Point) o; // 类型转换
+            return x == point.x && y == point.y; // 根据x和y的值判断两个Point对象是否相等
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * x + y; // 生成基于x和y值的哈希码
         }
     }
 
