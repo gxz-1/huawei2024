@@ -184,7 +184,7 @@ public class Main {
 
                     robots[i].FronzenStatus = robots[i].status;
                     robots[i].status=-1;
-                    robots[i].waitTime = 20+random.nextInt(5);//random.nextInt( + 5);
+                    robots[i].waitTime = 20+random.nextInt( + 5);
                 }
                 else if (robots[i].waitTime>0) {
                 robots[i].waitTime--;}
@@ -208,7 +208,7 @@ public class Main {
                 }
             }
         }
-        this.robotAdjacency=getRobotAdjacency();
+//        this.robotAdjacency=getRobotAdjacency();
 
 
         for(int i = 0; i < 5; i ++) {
@@ -226,7 +226,7 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        if(testOn)test();//测试用新建方法
+        test();//测试用新建方法
 
         Main mainInstance = new Main();
         Scanner scanf = new Scanner(System.in);
