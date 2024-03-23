@@ -37,6 +37,8 @@ public class Main {
     private Robot[] robots = new Robot[robot_num + 10];
     private Boat[] boats = new Boat[10];
 
+    private LinkedList<int[]> accidentPoints = new LinkedList<>();//记录发生碰撞的点
+
     private PriorityQueue<int[]> availableBerths = new PriorityQueue<>(new Comparator<int[]>() {
         @Override
         public int compare(int[] o1, int[] o2) {
@@ -174,19 +176,26 @@ public class Main {
             robots[i].sts = scanf.nextInt();//0 表示恢复状态 1 表示正常运行状态
             if(robots[i].sts==0){//如果发生碰撞，需要冻结状态并等待
 
+
+
                 if (robots[i].waitTime==-1){
+                    //第一次碰撞，要在全图标记碰撞点
+                    accidentPoints.add(new int[]{robots[i].x,robots[i].y});
+
                     robots[i].FronzenStatus = robots[i].status;
                     robots[i].status=-1;
-                    robots[i].waitTime = 20+random.nextInt( + 5);
+                    robots[i].waitTime = 20+random.nextInt(5);//random.nextInt( + 5);
                 }
                 else if (robots[i].waitTime>0) {
                 robots[i].waitTime--;}
-                else if (robots[i].waitTime==0){
+                else if (robots[i].waitTime==0){//碰撞时间内等待时间结束，这逻辑上是不可能的
                     robots[i].status = robots[i].FronzenStatus;
                     robots[i].waitTime=-1;
                 }
 
             } else if (robots[i].sts==1) {
+
+
                 //如果有冻结的状态，就解冻，如果没有，就不管
 
                 if (robots[i].FronzenStatus!=-7){
