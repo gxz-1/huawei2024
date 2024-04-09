@@ -12,7 +12,7 @@ public class FastAStar {
     private static int DEFAULT_DIAGONAL_COST = 14;
     private int hvCost=1;//水平或垂直移动的代价
     private int diagonalCost=10000;//对角移动的代价
-    private Node[][] searchArea;//搜索区域, 由200*200个节点组成，有的节点isBlock为true表示障碍
+    public Node[][] searchArea;//搜索区域, 由200*200个节点组成，有的节点isBlock为true表示障碍
     private PriorityQueue<Node> openList;//优先队列，用于存放待扩展的节点
     private Set<Node> closedSet;//存放已经扩展过的节点
     private Node initialNode;//起始节点
@@ -314,7 +314,7 @@ public class FastAStar {
      * @param row
      * @param col
      */
-    private void setBlock(int row, int col) {
+    public void setBlock(int row, int col) {
         this.searchArea[row][col].setBlock(true);
     }
 
